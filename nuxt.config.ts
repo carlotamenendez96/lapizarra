@@ -5,6 +5,8 @@ export default defineNuxtConfig({
   // en el HTML. Con una SPA normal indexaría una página vacía.
   ssr: true,
 
+  modules: ['@nuxt/fonts', '@nuxt/image'],
+
   css: ['~/assets/css/main.css'],
 
   runtimeConfig: {
@@ -38,6 +40,48 @@ export default defineNuxtConfig({
     compressPublicAssets: { brotli: true, gzip: true },
   },
 
+  // Auto-aloja Fraunces / Manrope / IBM Plex Mono (usadas vía variables CSS
+  // en main.css). `global: true` las inyecta aunque el escáner no vea el
+  // nombre dentro de --display/--texto/--dato.
+  fonts: {
+    processCSSVariables: true,
+    families: [
+      {
+        name: 'Fraunces',
+        provider: 'google',
+        global: true,
+        weights: [400, 500, 600, 700],
+        styles: ['normal', 'italic'],
+      },
+      {
+        name: 'Manrope',
+        provider: 'google',
+        global: true,
+        weights: [400, 500, 600, 700],
+      },
+      {
+        name: 'IBM Plex Mono',
+        provider: 'google',
+        global: true,
+        weights: [400, 500],
+      },
+    ],
+  },
+
+  // Listados siguen usando thumb_url de Telegram; IPX solo genera srcset/WebP.
+  image: {
+    domains: [
+      ...(process.env.SUPABASE_URL
+        ? [new URL(process.env.SUPABASE_URL).hostname]
+        : []),
+      ...(process.env.NUXT_SUPABASE_URL
+        ? [new URL(process.env.NUXT_SUPABASE_URL).hostname]
+        : []),
+      'oeuobixauwbdfuinmhvy.supabase.co',
+    ],
+    format: ['webp'],
+  },
+
   app: {
     head: {
       htmlAttrs: { lang: 'es' },
@@ -50,12 +94,6 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap',
-        },
       ],
     },
   },

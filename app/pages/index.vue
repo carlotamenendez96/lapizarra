@@ -2,7 +2,7 @@
 import type { MenuHoy, Ciudad } from '~~/server/utils/supabase'
 
 const config = useRuntimeConfig()
-const siteUrl = config.public.siteUrl.replace(/\/$/, '')
+const siteUrlBase = config.public.siteUrl.replace(/\/$/, '')
 
 const { data } = await useAsyncData('home', async () => {
   const [menus, ciudades] = await Promise.all([
@@ -18,84 +18,74 @@ const fecha = fechaLarga()
 const hoyISO = fechaISO()
 const imagenSocial = computed(() => menus.value[0]?.photo_url || undefined)
 
-const titulo = 'Menú del día hoy en Asturias — precios y fotos | La Pizarrina'
-const descripcion = computed(
-  () =>
-    `Consulta los menús del día de hoy en Asturias: ${menus.value.length} restaurantes con su pizarra, sus platos y su precio. Actualizado cada mañana.`,
-)
+const titulo = tituloSeoHome()
+const descripcion = computed(() => descripcionSeoHome(menus.value.length, nombresCiudades(ciudades.value)))
+const textoSeo = computed(() => textoSeoHome(ciudades.value))
 
-useSeoMeta({
+const { siteUrl } = useSeoPagina({
   title: titulo,
   description: descripcion,
-  ogTitle: titulo,
-  ogDescription: descripcion,
-  ogType: 'website',
-  ogUrl: siteUrl,
-  ogLocale: 'es_ES',
-  ogSiteName: 'La Pizarrina',
-  ogImage: imagenSocial,
-  twitterCard: 'summary_large_image',
-  twitterImage: imagenSocial,
-  twitterTitle: titulo,
-  twitterDescription: descripcion,
-})
-
-useHead({
-  link: [{ rel: 'canonical', href: siteUrl }],
-  meta: [{ name: 'robots', content: 'index,follow,max-image-preview:large' }],
-  script: [
+  url: siteUrlBase,
+  image: imagenSocial,
+  imageAlt: 'Menú del día hoy en Asturias — La Pizarrina',
+  jsonLd: computed(() => [
     {
-      type: 'application/ld+json',
-      innerHTML: computed(() =>
-        JSON.stringify({
-          '@context': 'https://schema.org',
-          '@graph': [
-            {
-              '@type': 'WebSite',
-              '@id': `${siteUrl}/#website`,
-              name: 'La Pizarrina',
-              url: siteUrl,
-              inLanguage: 'es-ES',
-              description:
-                'Los menús del día de los restaurantes de Asturias, actualizados cada mañana con la foto de la pizarra.',
-              publisher: { '@id': `${siteUrl}/#organization` },
-            },
-            {
-              '@type': 'Organization',
-              '@id': `${siteUrl}/#organization`,
-              name: 'La Pizarrina',
-              url: siteUrl,
-              areaServed: {
-                '@type': 'AdministrativeArea',
-                name: 'Asturias',
-              },
-            },
-            {
-              '@type': 'CollectionPage',
-              '@id': `${siteUrl}/#webpage`,
-              url: siteUrl,
-              name: titulo,
-              description: descripcion.value,
-              isPartOf: { '@id': `${siteUrl}/#website` },
-              dateModified: hoyISO,
-              inLanguage: 'es-ES',
-              mainEntity: {
-                '@type': 'ItemList',
-                name: 'Restaurantes con menú del día hoy en Asturias',
-                numberOfItems: menus.value.length,
-                itemListElement: menus.value.map((m, i) => ({
-                  '@type': 'ListItem',
-                  position: i + 1,
-                  url: `${siteUrl}/restaurante/${m.slug}`,
-                  name: m.venue_name,
-                })),
-              },
-            },
-          ],
-        }),
-      ),
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      name: 'La Pizarrina',
+      url: siteUrl,
+      inLanguage: 'es-ES',
+      description:
+        'Los menús del día de los restaurantes de Asturias, actualizados cada mañana con la foto de la pizarra.',
+      publisher: { '@id': `${siteUrl}/#organization` },
     },
-  ],
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}/#organization`,
+      name: 'La Pizarrina',
+      url: siteUrl,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${siteUrl}/logo.png`,
+        width: 512,
+        height: 512,
+      },
+      image: `${siteUrl}/og-default.png`,
+      areaServed: {
+        '@type': 'AdministrativeArea',
+        name: 'Asturias',
+      },
+    },
+    {
+      '@type': 'CollectionPage',
+      '@id': `${siteUrl}/#webpage`,
+      url: siteUrl,
+      name: titulo,
+      description: descripcion.value,
+      isPartOf: { '@id': `${siteUrl}/#website` },
+      dateModified: hoyISO,
+      inLanguage: 'es-ES',
+      mainEntity: {
+        '@type': 'ItemList',
+        name: 'Menú del día hoy en Asturias — Gijón, Oviedo, Avilés, Salinas',
+        numberOfItems: menus.value.length,
+        itemListElement: [
+          ...ciudades.value.map((c, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: `Menú del día en ${c.city}`,
+            url: `${siteUrl}/menu-del-dia/${c.city_slug}`,
+          })),
+          ...menus.value.map((m, i) => ({
+            '@type': 'ListItem',
+            position: ciudades.value.length + i + 1,
+            url: `${siteUrl}/restaurante/${m.slug}`,
+            name: m.venue_name,
+          })),
+        ],
+      },
+    },
+  ]),
 })
 </script>
 
@@ -113,8 +103,8 @@ useHead({
             <p class="badge">Hoy · {{ fecha }}</p>
             <h1>Menú del día en Asturias</h1>
             <p class="sub">
-              Las pizarras reales de los bares, actualizadas cada mañana.
-              Foto, precio y dirección, sin intermediarios.
+              Las pizarras reales de los bares en Gijón, Oviedo, Avilés, Salinas
+              y el resto de Asturias. Foto, precio y dirección, actualizadas cada mañana.
             </p>
           </div>
           <p class="hero-cuenta">
@@ -143,6 +133,20 @@ useHead({
           :menus="menus"
           mensaje-vacio="Todavía no hay menús publicados hoy. Los bares suelen colgar su pizarra entre las 10 y las 12."
         />
+      </section>
+
+      <section class="contenedor seo-bloque">
+        <h2 class="titulo-seccion">Menú del día por ciudad en Asturias</h2>
+        <p class="seo-texto">{{ textoSeo }}</p>
+        <nav v-if="ciudades.length" aria-label="Menú del día por ciudad">
+          <ul class="seo-enlaces">
+            <li v-for="c in ciudades" :key="c.city_slug">
+              <NuxtLink :to="`/menu-del-dia/${c.city_slug}`">
+                Menú del día en {{ c.city }}
+              </NuxtLink>
+            </li>
+          </ul>
+        </nav>
       </section>
 
       <section class="contenedor">
@@ -287,6 +291,44 @@ useHead({
 .titulo-seccion {
   font-size: var(--paso-2);
   margin-bottom: 1.35rem;
+}
+
+.seo-bloque {
+  padding-top: 2.8rem;
+  padding-bottom: 0.5rem;
+}
+
+.seo-texto {
+  margin: 0 0 1.4rem;
+  color: var(--grafito-suave);
+  max-width: 62ch;
+  line-height: 1.6;
+}
+
+.seo-enlaces {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.seo-enlaces a {
+  color: var(--grafito);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-pill);
+  background: var(--blanco);
+  transition: background var(--transicion), color var(--transicion), border-color var(--transicion);
+}
+
+.seo-enlaces a:hover {
+  background: var(--pizarra);
+  border-color: var(--pizarra);
+  color: var(--tiza);
 }
 
 .puente {

@@ -15,15 +15,17 @@ const zona = computed(() => props.menu.neighborhood || props.menu.city)
   <article class="tarjeta">
     <NuxtLink :to="`/restaurante/${menu.slug}`" class="enlace">
       <div class="marco">
-        <img
+        <NuxtImg
           :src="menu.thumb_url || menu.photo_url || ''"
           :alt="`Menú del día de hoy en ${menu.venue_name}, ${menu.city}`"
           width="600"
           height="450"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
+          format="webp"
           :loading="prioritaria ? 'eager' : 'lazy'"
           :fetchpriority="prioritaria ? 'high' : 'auto'"
           decoding="async"
-        >
+        />
         <span v-if="precio" class="precio chapa">{{ precio }}</span>
         <span v-else class="precio precio--libre chapa">En la foto</span>
       </div>

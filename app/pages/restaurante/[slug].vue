@@ -3,7 +3,7 @@ import type { MenuHoy, Ciudad } from '~~/server/utils/supabase'
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const siteUrl = config.public.siteUrl.replace(/\/$/, '')
+const siteUrlBase = config.public.siteUrl.replace(/\/$/, '')
 const slug = String(route.params.slug)
 
 const { data, error } = await useAsyncData(`local-${slug}`, async () => {
@@ -31,7 +31,7 @@ const tieneMenuHoy = computed(() => Boolean(local.value.photo_url))
 const precio = computed(() => precioLegible(local.value.price, local.value.price_text))
 const fecha = fechaLarga()
 const hoyISO = fechaISO()
-const url = `${siteUrl}/restaurante/${slug}`
+const url = `${siteUrlBase}/restaurante/${slug}`
 const imagenSocial = computed(() => local.value.photo_url || undefined)
 
 const titulo = computed(() =>
@@ -46,99 +46,93 @@ const descripcion = computed(() =>
     : `${local.value.venue_name}, en ${local.value.address} (${local.value.city}). Consulta aquí su menú del día en cuanto lo publiquen.`,
 )
 
-useSeoMeta({
+const { siteUrl } = useSeoPagina({
   title: titulo,
   description: descripcion,
-  ogTitle: titulo,
-  ogDescription: descripcion,
-  ogType: 'website',
-  ogUrl: url,
-  ogLocale: 'es_ES',
-  ogSiteName: 'La Pizarrina',
-  ogImage: imagenSocial,
-  twitterCard: 'summary_large_image',
-  twitterImage: imagenSocial,
-  twitterTitle: titulo,
-  twitterDescription: descripcion,
-})
-
-useHead({
-  link: [{ rel: 'canonical', href: url }],
-  meta: [{ name: 'robots', content: 'index,follow,max-image-preview:large' }],
-  script: [
+  url,
+  image: imagenSocial,
+  imageAlt: computed(
+    () => `Pizarra del menú del día en ${local.value.venue_name}, ${local.value.city}`,
+  ),
+  jsonLd: computed(() => [
     {
-      type: 'application/ld+json',
-      innerHTML: computed(() =>
-        JSON.stringify({
-          '@context': 'https://schema.org',
-          '@graph': [
-            {
-              '@type': 'BreadcrumbList',
-              itemListElement: [
-                { '@type': 'ListItem', position: 1, name: 'Inicio', item: siteUrl },
-                ...(ciudadSlug.value
-                  ? [{
-                      '@type': 'ListItem',
-                      position: 2,
-                      name: `Menú del día en ${local.value.city}`,
-                      item: `${siteUrl}/menu-del-dia/${ciudadSlug.value}`,
-                    }]
-                  : []),
-                { '@type': 'ListItem', position: ciudadSlug.value ? 3 : 2, name: local.value.venue_name, item: url },
-              ],
-            },
-            {
-              '@type': 'Restaurant',
-              '@id': `${url}#restaurant`,
-              name: local.value.venue_name,
-              url,
-              image: local.value.photo_url || undefined,
-              telephone: local.value.contact_phone || undefined,
-              openingHours: local.value.schedule || undefined,
-              servesCuisine: 'Asturiana',
-              address: {
-                '@type': 'PostalAddress',
-                streetAddress: local.value.address,
-                addressLocality: local.value.city,
-                addressRegion: 'Asturias',
-                addressCountry: 'ES',
-              },
-              ...(local.value.lat && local.value.lng
-                ? {
-                    geo: {
-                      '@type': 'GeoCoordinates',
-                      latitude: local.value.lat,
-                      longitude: local.value.lng,
-                    },
-                  }
-                : {}),
-              ...(tieneMenuHoy.value
-                ? {
-                    hasMenu: {
-                      '@type': 'Menu',
-                      name: 'Menú del día',
-                      url,
-                      ...(local.value.updated_at
-                        ? { dateModified: local.value.updated_at }
-                        : { dateModified: hoyISO }),
-                      ...(local.value.price
-                        ? {
-                            offers: {
-                              '@type': 'Offer',
-                              price: local.value.price,
-                              priceCurrency: 'EUR',
-                            },
-                          }
-                        : {}),
-                    },
-                  }
-                : {}),
-            },
-          ],
-        }),
-      ),
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Inicio', item: siteUrl },
+        ...(ciudadSlug.value
+          ? [{
+              '@type': 'ListItem',
+              position: 2,
+              name: `Menú del día en ${local.value.city}`,
+              item: `${siteUrl}/menu-del-dia/${ciudadSlug.value}`,
+            }]
+          : []),
+        { '@type': 'ListItem', position: ciudadSlug.value ? 3 : 2, name: local.value.venue_name, item: url },
+      ],
     },
-  ],
+    {
+      '@type': 'Restaurant',
+      '@id': `${url}#restaurant`,
+      name: local.value.venue_name,
+      url,
+      ...(local.value.photo_url
+        ? {
+            image: {
+              '@type': 'ImageObject',
+              url: local.value.photo_url,
+              width: 1000,
+              height: 1333,
+              caption: `Pizarra con el menú del día de hoy en ${local.value.venue_name}`,
+            },
+          }
+        : {}),
+      telephone: local.value.contact_phone || undefined,
+      openingHours: local.value.schedule || undefined,
+      servesCuisine: 'Asturiana',
+      ...(local.value.price
+        ? { priceRange: `€${Number(local.value.price).toFixed(0)}` }
+        : local.value.price_text
+          ? { priceRange: local.value.price_text }
+          : {}),
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: local.value.address,
+        addressLocality: local.value.city,
+        addressRegion: 'Asturias',
+        addressCountry: 'ES',
+      },
+      ...(local.value.lat && local.value.lng
+        ? {
+            geo: {
+              '@type': 'GeoCoordinates',
+              latitude: local.value.lat,
+              longitude: local.value.lng,
+            },
+          }
+        : {}),
+      ...(tieneMenuHoy.value
+        ? {
+            hasMenu: {
+              '@type': 'Menu',
+              name: 'Menú del día',
+              url,
+              ...(local.value.updated_at
+                ? { dateModified: local.value.updated_at }
+                : { dateModified: hoyISO }),
+              ...(local.value.price
+                ? {
+                    offers: {
+                      '@type': 'Offer',
+                      price: local.value.price,
+                      priceCurrency: 'EUR',
+                    },
+                  }
+                : {}),
+            },
+          }
+        : {}),
+    },
+  ]),
 })
 
 const enlaceMapa = computed(
@@ -187,14 +181,16 @@ const enlaceMapa = computed(
           <h2 class="eyebrow">Menú de hoy, {{ fecha }}</h2>
 
           <figure v-if="tieneMenuHoy" class="foto">
-            <img
+            <NuxtImg
               :src="local.photo_url!"
               :alt="`Pizarra con el menú del día de hoy en ${local.venue_name}, ${local.city}`"
               width="1000"
               height="1333"
+              sizes="(max-width: 768px) 100vw, 640px"
+              format="webp"
               fetchpriority="high"
               decoding="async"
-            >
+            />
             <figcaption>Foto de la pizarra enviada hoy por el restaurante.</figcaption>
           </figure>
 

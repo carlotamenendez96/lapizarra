@@ -2,9 +2,9 @@
 import type { Ciudad } from '~~/server/utils/supabase'
 
 const config = useRuntimeConfig()
-const siteUrl = config.public.siteUrl.replace(/\/$/, '')
+const siteUrlBase = config.public.siteUrl.replace(/\/$/, '')
 const contacto = config.public.contactoComercialUrl as string
-const url = `${siteUrl}/como-funciona`
+const url = `${siteUrlBase}/como-funciona`
 
 const { data: ciudades } = await useAsyncData('ciudades-como', () =>
   $fetch<Ciudad[]>('/api/ciudades').catch(() => [] as Ciudad[]),
@@ -14,73 +14,91 @@ const titulo = 'Cómo funciona La Pizarrina — menú del día en Asturias'
 const descripcion =
   'La Pizarrina publica cada mañana la foto de la pizarra de bares y restaurantes de Asturias. Si tienes un local, un comercial te da tu enlace de alta en Telegram.'
 
-useSeoMeta({
+useSeoPagina({
   title: titulo,
   description: descripcion,
-  ogTitle: titulo,
-  ogDescription: descripcion,
-  ogType: 'website',
-  ogUrl: url,
-  ogLocale: 'es_ES',
-  ogSiteName: 'La Pizarrina',
-  twitterCard: 'summary_large_image',
-  twitterTitle: titulo,
-  twitterDescription: descripcion,
-})
-
-useHead({
-  link: [{ rel: 'canonical', href: url }],
-  meta: [{ name: 'robots', content: 'index,follow' }],
-  script: [
+  url,
+  imageAlt: 'Cómo funciona La Pizarrina',
+  robots: 'index,follow',
+  jsonLd: [
     {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@graph': [
-          {
-            '@type': 'BreadcrumbList',
-            itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Inicio', item: siteUrl },
-              { '@type': 'ListItem', position: 2, name: 'Cómo funciona', item: url },
-            ],
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Inicio', item: siteUrlBase },
+        { '@type': 'ListItem', position: 2, name: 'Cómo funciona', item: url },
+      ],
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${url}#webpage`,
+      url,
+      name: titulo,
+      description: descripcion,
+      isPartOf: { '@type': 'WebSite', name: 'La Pizarrina', url: siteUrlBase },
+      inLanguage: 'es-ES',
+    },
+    {
+      '@type': 'HowTo',
+      name: 'Cómo publicar el menú del día en La Pizarrina',
+      description:
+        'Un comercial te da de alta y cada mañana envías la foto de tu pizarra por Telegram.',
+      step: [
+        {
+          '@type': 'HowToStep',
+          position: 1,
+          name: 'Habla con un comercial',
+          text: 'Contacta con el equipo. Te enviarán tu enlace personal de alta en Telegram.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 2,
+          name: 'Fotografía la pizarra',
+          text: 'Por la mañana, haz una foto clara de la pizarra del menú del día.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 3,
+          name: 'Envíala por Telegram',
+          text: 'Mándala por tu enlace personal. En minutos aparece en la web.',
+        },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: '¿Cómo veo el menú del día en Asturias?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Elige tu ciudad en La Pizarrina y consulta las pizarras publicadas hoy: foto, precio y dirección de cada bar o restaurante.',
           },
-          {
-            '@type': 'WebPage',
-            '@id': `${url}#webpage`,
-            url,
-            name: titulo,
-            description: descripcion,
-            isPartOf: { '@type': 'WebSite', name: 'La Pizarrina', url: siteUrl },
-            inLanguage: 'es-ES',
+        },
+        {
+          '@type': 'Question',
+          name: '¿Cómo publico el menú de mi bar en La Pizarrina?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Un comercial te da de alta y te envía tu enlace personal de Telegram. Cada mañana fotografías la pizarra y la mandas por ese enlace; en minutos aparece en la web.',
           },
-          {
-            '@type': 'HowTo',
-            name: 'Cómo publicar el menú del día en La Pizarrina',
-            description:
-              'Un comercial te da de alta y cada mañana envías la foto de tu pizarra por Telegram.',
-            step: [
-              {
-                '@type': 'HowToStep',
-                position: 1,
-                name: 'Habla con un comercial',
-                text: 'Contacta con el equipo. Te enviarán tu enlace personal de alta en Telegram.',
-              },
-              {
-                '@type': 'HowToStep',
-                position: 2,
-                name: 'Fotografía la pizarra',
-                text: 'Por la mañana, haz una foto clara de la pizarra del menú del día.',
-              },
-              {
-                '@type': 'HowToStep',
-                position: 3,
-                name: 'Envíala por Telegram',
-                text: 'Mándala por tu enlace personal. En minutos aparece en la web.',
-              },
-            ],
+        },
+        {
+          '@type': 'Question',
+          name: '¿Hay alta automática en la web?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'No. El alta la gestiona un comercial, que registra el local y te pasa tu URL personal de Telegram para publicar el menú.',
           },
-        ],
-      }),
+        },
+        {
+          '@type': 'Question',
+          name: '¿Por qué existe La Pizarrina?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'En Asturias el menú del día sigue viviendo en la pizarra de la puerta. La Pizarrina muestra la foto que manda el hostelero cada día, sin reescribir la carta.',
+          },
+        },
+      ],
     },
   ],
 })

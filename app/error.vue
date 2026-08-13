@@ -1,5 +1,23 @@
 <script setup lang="ts">
-defineProps<{ error: { statusCode: number; statusMessage?: string } }>()
+const props = defineProps<{ error: { statusCode: number; statusMessage?: string } }>()
+
+const es404 = computed(() => props.error.statusCode === 404)
+const titulo = computed(() =>
+  es404.value
+    ? 'Página no encontrada | La Pizarrina'
+    : 'Error | La Pizarrina',
+)
+const descripcion = computed(() =>
+  es404.value
+    ? 'Esta página no existe en La Pizarrina. Puede que el restaurante ya no esté dado de alta.'
+    : 'Ha ocurrido un error. Vuelve a intentarlo en un momento.',
+)
+
+useSeoMeta({
+  title: titulo,
+  description: descripcion,
+  robots: 'noindex,nofollow',
+})
 </script>
 
 <template>
@@ -8,10 +26,10 @@ defineProps<{ error: { statusCode: number; statusMessage?: string } }>()
 
     <main class="contenedor caja">
       <p class="eyebrow">Error {{ error.statusCode }}</p>
-      <h1>{{ error.statusCode === 404 ? 'Esta página no existe' : 'Algo ha fallado' }}</h1>
+      <h1>{{ es404 ? 'Esta página no existe' : 'Algo ha fallado' }}</h1>
       <p class="texto">
         {{
-          error.statusCode === 404
+          es404
             ? 'Puede que el restaurante ya no esté dado de alta o que la dirección esté mal escrita.'
             : 'Vuelve a intentarlo en un momento.'
         }}

@@ -3,7 +3,7 @@ import type { MenuHoy, Ciudad } from '~~/server/utils/supabase'
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const siteUrl = config.public.siteUrl.replace(/\/$/, '')
+const siteUrlBase = config.public.siteUrl.replace(/\/$/, '')
 const slugCiudad = String(route.params.ciudad)
 
 const { data } = await useAsyncData(`ciudad-${slugCiudad}`, async () => {
@@ -34,86 +34,61 @@ if (!menus.value.length && !ciudades.value.some((c) => c.city_slug === slugCiuda
 const otrasCiudades = computed(() => ciudades.value.filter((c) => c.city_slug !== slugCiudad))
 const fecha = fechaLarga()
 const hoyISO = fechaISO()
-const url = `${siteUrl}/menu-del-dia/${slugCiudad}`
+const url = `${siteUrlBase}/menu-del-dia/${slugCiudad}`
 const imagenSocial = computed(() => menus.value[0]?.photo_url || undefined)
 
-const titulo = computed(() => `Menú del día en ${nombreCiudad.value} hoy — precios y fotos | La Pizarrina`)
-const descripcion = computed(
-  () =>
-    `${menus.value.length} restaurantes con menú del día hoy en ${nombreCiudad.value}: mira la pizarra de cada sitio, los platos y el precio antes de decidir dónde comer.`,
-)
+const titulo = computed(() => tituloSeoCiudad(nombreCiudad.value))
+const descripcion = computed(() => descripcionSeoCiudad(nombreCiudad.value, menus.value.length))
+const textoSeo = computed(() => textoSeoCiudad(nombreCiudad.value))
 
-useSeoMeta({
+const { siteUrl } = useSeoPagina({
   title: titulo,
   description: descripcion,
-  ogTitle: titulo,
-  ogDescription: descripcion,
-  ogType: 'website',
-  ogUrl: url,
-  ogLocale: 'es_ES',
-  ogSiteName: 'La Pizarrina',
-  ogImage: imagenSocial,
-  twitterCard: 'summary_large_image',
-  twitterImage: imagenSocial,
-  twitterTitle: titulo,
-  twitterDescription: descripcion,
-})
-
-useHead({
-  link: [{ rel: 'canonical', href: url }],
-  meta: [{ name: 'robots', content: 'index,follow,max-image-preview:large' }],
-  script: [
+  url,
+  image: imagenSocial,
+  imageAlt: computed(() => `Menú del día en ${nombreCiudad.value} — La Pizarrina`),
+  jsonLd: computed(() => [
     {
-      type: 'application/ld+json',
-      innerHTML: computed(() =>
-        JSON.stringify({
-          '@context': 'https://schema.org',
-          '@graph': [
-            {
-              '@type': 'BreadcrumbList',
-              itemListElement: [
-                { '@type': 'ListItem', position: 1, name: 'Inicio', item: siteUrl },
-                { '@type': 'ListItem', position: 2, name: `Menú del día en ${nombreCiudad.value}`, item: url },
-              ],
-            },
-            {
-              '@type': 'CollectionPage',
-              '@id': `${url}#webpage`,
-              url,
-              name: titulo.value,
-              description: descripcion.value,
-              dateModified: hoyISO,
-              inLanguage: 'es-ES',
-              isPartOf: { '@type': 'WebSite', name: 'La Pizarrina', url: siteUrl },
-              mainEntity: {
-                '@type': 'ItemList',
-                name: `Restaurantes con menú del día en ${nombreCiudad.value}`,
-                numberOfItems: menus.value.length,
-                itemListElement: menus.value.map((m, i) => ({
-                  '@type': 'ListItem',
-                  position: i + 1,
-                  item: {
-                    '@type': 'Restaurant',
-                    name: m.venue_name,
-                    url: `${siteUrl}/restaurante/${m.slug}`,
-                    image: m.photo_url || undefined,
-                    telephone: m.contact_phone || undefined,
-                    address: {
-                      '@type': 'PostalAddress',
-                      streetAddress: m.address,
-                      addressLocality: m.city,
-                      addressRegion: 'Asturias',
-                      addressCountry: 'ES',
-                    },
-                  },
-                })),
-              },
-            },
-          ],
-        }),
-      ),
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Inicio', item: siteUrl },
+        { '@type': 'ListItem', position: 2, name: `Menú del día en ${nombreCiudad.value}`, item: url },
+      ],
     },
-  ],
+    {
+      '@type': 'CollectionPage',
+      '@id': `${url}#webpage`,
+      url,
+      name: titulo.value,
+      description: descripcion.value,
+      dateModified: hoyISO,
+      inLanguage: 'es-ES',
+      isPartOf: { '@type': 'WebSite', name: 'La Pizarrina', url: siteUrl },
+      mainEntity: {
+        '@type': 'ItemList',
+        name: `Menú del día en ${nombreCiudad.value} hoy`,
+        numberOfItems: menus.value.length,
+        itemListElement: menus.value.map((m, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          item: {
+            '@type': 'Restaurant',
+            name: m.venue_name,
+            url: `${siteUrl}/restaurante/${m.slug}`,
+            image: m.photo_url || undefined,
+            telephone: m.contact_phone || undefined,
+            address: {
+              '@type': 'PostalAddress',
+              streetAddress: m.address,
+              addressLocality: m.city,
+              addressRegion: 'Asturias',
+              addressCountry: 'ES',
+            },
+          },
+        })),
+      },
+    },
+  ]),
 })
 </script>
 
@@ -145,6 +120,7 @@ useHead({
       </section>
 
       <section class="contenedor listado">
+        <h2 class="titulo-seccion">Menú del día en {{ nombreCiudad }} hoy</h2>
         <RejillaMenus
           :menus="menus"
           :mensaje-vacio="`Todavía no hay menús publicados hoy en ${nombreCiudad}. Los bares suelen colgar su pizarra entre las 10 y las 12.`"
@@ -152,6 +128,8 @@ useHead({
       </section>
 
       <section class="contenedor puente">
+        <h2 class="titulo-seccion">Menú {{ nombreCiudad }} — qué es La Pizarrina</h2>
+        <p class="seo-texto">{{ textoSeo }}</p>
         <p>
           En {{ nombreCiudad }} ves las pizarras publicadas hoy, con foto, precio y dirección.
           <NuxtLink to="/como-funciona">Cómo funciona La Pizarrina</NuxtLink>
@@ -250,6 +228,18 @@ useHead({
 .listado { padding-top: 2.4rem; }
 
 .puente { padding-top: 2.6rem; }
+
+.puente .titulo-seccion {
+  font-size: var(--paso-2);
+  margin-bottom: 1rem;
+}
+
+.seo-texto {
+  margin: 0 0 1.2rem;
+  color: var(--grafito-suave);
+  max-width: 62ch;
+  line-height: 1.6;
+}
 
 .puente > p {
   margin: 0;
