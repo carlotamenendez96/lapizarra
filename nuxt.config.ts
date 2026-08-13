@@ -24,16 +24,15 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    // Los menús cambian una vez al día, pero un local puede subir el suyo
-    // a media mañana: 5 minutos de caché da páginas casi instantáneas sin
-    // que un menú nuevo tarde en aparecer. stale-while-revalidate sirve la
-    // versión cacheada mientras regenera por detrás.
-    '/': { swr: 300 },
-    '/menu-del-dia/**': { swr: 300 },
-    '/restaurante/**': { swr: 300 },
-    '/como-funciona': { swr: 3600 },
-    '/sitemap.xml': { swr: 3600 },
-    '/robots.txt': { swr: 86400 },
+    // En Vercel, `swr` cachea el HTML en la CDN sin caducidad real (hemos
+    // visto páginas con Age de horas). `isr` sí regenera pasado el TTL:
+    // un segundo envío del menú aparece como mucho 5 minutos después.
+    '/': { isr: 300 },
+    '/menu-del-dia/**': { isr: 300 },
+    '/restaurante/**': { isr: 300 },
+    '/como-funciona': { isr: 3600 },
+    '/sitemap.xml': { isr: 3600 },
+    '/robots.txt': { isr: 86400 },
   },
 
   nitro: {
