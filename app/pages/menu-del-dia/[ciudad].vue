@@ -116,6 +116,7 @@ const { siteUrl } = useSeoPagina({
         <h2 class="titulo-seccion">Menú del día en {{ nombreCiudad }} hoy</h2>
         <RejillaMenus
           :menus="menus"
+          filtrar-por-barrio
           :mensaje-vacio="`Todavía no hay menús publicados hoy en ${nombreCiudad}. Los bares suelen colgar su pizarra entre las 10 y las 12.`"
         />
       </section>

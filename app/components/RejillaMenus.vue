@@ -5,9 +5,31 @@ const props = defineProps<{
   menus: MenuHoy[]
   /** Se muestra bajo el buscador cuando la lista está vacía de origen. */
   mensajeVacio?: string
+  /** Chips de barrio: solo en la página de ciudad, no en toda Asturias. */
+  filtrarPorBarrio?: boolean
 }>()
 
 const consulta = ref('')
+const barrioActivo = ref('')
+
+const barrios = computed(() => {
+  const conteo = new Map<string, number>()
+  for (const menu of props.menus) {
+    const barrio = menu.neighborhood?.trim()
+    if (!barrio) continue
+    conteo.set(barrio, (conteo.get(barrio) || 0) + 1)
+  }
+  return [...conteo.entries()]
+    .map(([nombre, total]) => ({ nombre, total }))
+    .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
+})
+
+const mostrarBarrios = computed(() => props.filtrarPorBarrio && barrios.value.length > 0)
+
+const porBarrio = computed(() => {
+  if (!barrioActivo.value) return props.menus
+  return props.menus.filter((m) => m.neighborhood?.trim() === barrioActivo.value)
+})
 
 /* El filtro es en cliente sobre la lista que ya está en la página: la
    respuesta es instantánea y no hay ni una petición al servidor por
@@ -15,16 +37,44 @@ const consulta = ref('')
    si algún día son miles, tocaría pasarlo a búsqueda en servidor. */
 const filtrados = computed(() => {
   const q = normalizar(consulta.value)
-  if (!q) return props.menus
+  if (!q) return porBarrio.value
 
-  return props.menus.filter((m) =>
+  return porBarrio.value.filter((m) =>
     normalizar(`${m.venue_name} ${m.neighborhood || ''} ${m.address}`).includes(q),
   )
 })
+
+function elegirBarrio(nombre: string) {
+  barrioActivo.value = nombre
+}
 </script>
 
 <template>
   <div>
+    <div v-if="mostrarBarrios" class="barrios">
+      <h3 class="eyebrow">Filtra por barrio</h3>
+      <div class="chips" role="group" aria-label="Barrio">
+        <button
+          type="button"
+          class="chip"
+          :class="{ 'chip--activo': !barrioActivo }"
+          @click="elegirBarrio('')"
+        >
+          Todos <span class="chip-num">{{ menus.length }}</span>
+        </button>
+        <button
+          v-for="b in barrios"
+          :key="b.nombre"
+          type="button"
+          class="chip"
+          :class="{ 'chip--activo': barrioActivo === b.nombre }"
+          @click="elegirBarrio(b.nombre)"
+        >
+          {{ b.nombre }} <span class="chip-num">{{ b.total }}</span>
+        </button>
+      </div>
+    </div>
+
     <div class="barra">
       <label class="campo">
         <span class="solo-lectores">Buscar restaurante por nombre</span>
@@ -60,11 +110,59 @@ const filtrados = computed(() => {
       <button type="button" class="limpiar" @click="consulta = ''">Ver todos</button>
     </p>
 
+    <p v-else-if="barrioActivo" class="vacio">
+      Hoy no hay menús en {{ barrioActivo }}.
+      <button type="button" class="limpiar" @click="barrioActivo = ''">Ver todos los barrios</button>
+    </p>
+
     <p v-else class="vacio">{{ mensajeVacio || 'Todavía no hay menús publicados hoy.' }}</p>
   </div>
 </template>
 
 <style scoped>
+.barrios { margin-bottom: 1.35rem; }
+
+.chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0.48rem 0.95rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-pill);
+  background: var(--papel);
+  font-family: inherit;
+  font-size: var(--paso-0);
+  font-weight: 500;
+  color: inherit;
+  cursor: pointer;
+  transition: background var(--transicion), border-color var(--transicion), color var(--transicion);
+}
+
+.chip:hover,
+.chip--activo {
+  background: var(--pizarra);
+  border-color: var(--pizarra);
+  color: var(--tiza);
+}
+
+.chip-num {
+  font-family: var(--dato);
+  font-size: var(--paso-1);
+  color: var(--sidra);
+}
+
+.chip:hover .chip-num,
+.chip--activo .chip-num { color: var(--sidra-clara); }
+
 .barra {
   display: flex;
   align-items: center;
