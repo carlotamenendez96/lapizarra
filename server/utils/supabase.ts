@@ -33,6 +33,21 @@ export interface Ciudad {
   total: number
 }
 
+function env(nombre: string): string | undefined {
+  /* Acceso dinámico: si se escribe process.env.SUPABASE_URL, Nitro puede
+     congelar el valor (o undefined) en el build de Vercel. */
+  const valor = process.env[nombre]
+  return valor?.trim() || undefined
+}
+
+function urlSupabase(cruda: string): string {
+  let url = cruda.trim().replace(/\/+$/, '')
+  /* El $fetch de Nitro, en Vercel, a veces se come la "h" y deja ttps:// */
+  if (url.startsWith('ttps://')) url = `h${url}`
+  if (!/^https?:\/\//i.test(url)) url = `https://${url}`
+  return url
+}
+
 async function rpc<T>(event: any, fn: string, args: Record<string, unknown> = {}): Promise<T> {
   const config = useRuntimeConfig(event)
 
@@ -40,25 +55,40 @@ async function rpc<T>(event: any, fn: string, args: Record<string, unknown> = {}
      las variables se definen después del build (Vercel, Netlify, Render...)
      hay que volver a leer process.env en caliente. Con este fallback
      funcionan tanto SUPABASE_URL como NUXT_SUPABASE_URL. */
-  const supabaseUrl = config.supabaseUrl || process.env.SUPABASE_URL
-  const supabaseAnonKey = config.supabaseAnonKey || process.env.SUPABASE_ANON_KEY
+  const supabaseUrl = urlSupabase(
+    String(config.supabaseUrl || env('SUPABASE_URL') || env('NUXT_SUPABASE_URL') || ''),
+  )
+  const supabaseAnonKey =
+    config.supabaseAnonKey || env('SUPABASE_ANON_KEY') || env('NUXT_SUPABASE_ANON_KEY')
 
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!supabaseUrl || supabaseUrl === 'https://' || !supabaseAnonKey) {
     throw createError({
       statusCode: 500,
       statusMessage: 'Faltan SUPABASE_URL o SUPABASE_ANON_KEY en las variables de entorno.',
     })
   }
 
-  return await $fetch<T>(`${supabaseUrl}/rest/v1/rpc/${fn}`, {
+  /* fetch nativo: el $fetch de Nitro usa la petición local como base
+     (http://localhost/api/...) y corrompe URLs https externas en Vercel. */
+  const respuesta = await fetch(`${supabaseUrl}/rest/v1/rpc/${fn}`, {
     method: 'POST',
     headers: {
       apikey: supabaseAnonKey,
       Authorization: `Bearer ${supabaseAnonKey}`,
       'Content-Type': 'application/json',
     },
-    body: args,
+    body: JSON.stringify(args),
   })
+
+  if (!respuesta.ok) {
+    const detalle = await respuesta.text().catch(() => '')
+    throw createError({
+      statusCode: respuesta.status,
+      statusMessage: `Supabase RPC ${fn} falló (${respuesta.status})${detalle ? `: ${detalle.slice(0, 180)}` : ''}`,
+    })
+  }
+
+  return (await respuesta.json()) as T
 }
 
 export const getMenusHoy = (event: any, ciudad?: string) =>
