@@ -3,9 +3,11 @@
  * en setup(): si se llama useRequestEvent/useFetch dentro de este callback
  * Nuxt 4.5 lanza NUXT_E1001 (composable fuera de contexto) y no hay datos.
  */
+import type { H3Event$Fetch } from 'nitropack/types'
 import type { Ciudad, MenuHoy } from '~~/server/utils/supabase'
 
-type FetchApi = typeof $fetch
+/** Lo que devuelve useRequestFetch(): en SSR no trae .raw/.create de $fetch. */
+type FetchApi = H3Event$Fetch
 
 export function datosHome(api: FetchApi) {
   return Promise.all([
