@@ -4,7 +4,8 @@ const siteUrlBase = String(config.public.siteUrl || '').replace(/\/$/, '')
 const contacto = config.public.contactoComercialUrl as string
 const url = `${siteUrlBase}/como-funciona`
 
-const { data: ciudades } = await useAsyncData('ciudades-como', () => datosCiudades())
+const api = useRequestFetch()
+const { data: ciudades } = await useAsyncData('ciudades-como', () => datosCiudades(api))
 
 const titulo = 'Cómo funciona La Pizarrina — menú del día en Asturias'
 const descripcion =

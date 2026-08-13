@@ -4,7 +4,8 @@ const config = useRuntimeConfig()
 const siteUrlBase = String(config.public.siteUrl || '').replace(/\/$/, '')
 const slug = String(route.params.slug)
 
-const { data, error } = await useAsyncData(`local-${slug}`, () => datosRestaurante(slug))
+const api = useRequestFetch()
+const { data, error } = await useAsyncData(`local-${slug}`, () => datosRestaurante(api, slug))
 
 if (error.value || !data.value?.local) {
   throw createError({

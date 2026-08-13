@@ -2,7 +2,8 @@
 const config = useRuntimeConfig()
 const siteUrlBase = String(config.public.siteUrl || '').replace(/\/$/, '')
 
-const { data } = await useAsyncData('home', () => datosHome())
+const api = useRequestFetch()
+const { data } = await useAsyncData('home', () => datosHome(api))
 
 const menus = computed(() => data.value?.menus ?? [])
 const ciudades = computed(() => data.value?.ciudades ?? [])
