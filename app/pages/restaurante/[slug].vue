@@ -36,8 +36,8 @@ const imagenSocial = computed(() => local.value.photo_url || undefined)
 
 const titulo = computed(() =>
   tieneMenuHoy.value
-    ? `Menú del día de hoy en ${local.value.venue_name} (${local.value.city}) | La Pizarra`
-    : `${local.value.venue_name}, ${local.value.city} — menú del día | La Pizarra`,
+    ? `Menú del día de hoy en ${local.value.venue_name} (${local.value.city}) | La Pizarrina`
+    : `${local.value.venue_name}, ${local.value.city} — menú del día | La Pizarrina`,
 )
 
 const descripcion = computed(() =>
@@ -54,7 +54,7 @@ useSeoMeta({
   ogType: 'website',
   ogUrl: url,
   ogLocale: 'es_ES',
-  ogSiteName: 'La Pizarra',
+  ogSiteName: 'La Pizarrina',
   ogImage: imagenSocial,
   twitterCard: 'summary_large_image',
   twitterImage: imagenSocial,

@@ -10,9 +10,9 @@ const { data: ciudades } = await useAsyncData('ciudades-como', () =>
   $fetch<Ciudad[]>('/api/ciudades').catch(() => [] as Ciudad[]),
 )
 
-const titulo = 'Cómo funciona La Pizarra — menú del día en Asturias'
+const titulo = 'Cómo funciona La Pizarrina — menú del día en Asturias'
 const descripcion =
-  'La Pizarra publica cada mañana la foto de la pizarra de bares y restaurantes de Asturias. Si tienes un local, un comercial te da tu enlace de alta en Telegram.'
+  'La Pizarrina publica cada mañana la foto de la pizarra de bares y restaurantes de Asturias. Si tienes un local, un comercial te da tu enlace de alta en Telegram.'
 
 useSeoMeta({
   title: titulo,
@@ -22,7 +22,7 @@ useSeoMeta({
   ogType: 'website',
   ogUrl: url,
   ogLocale: 'es_ES',
-  ogSiteName: 'La Pizarra',
+  ogSiteName: 'La Pizarrina',
   twitterCard: 'summary_large_image',
   twitterTitle: titulo,
   twitterDescription: descripcion,
@@ -50,12 +50,12 @@ useHead({
             url,
             name: titulo,
             description: descripcion,
-            isPartOf: { '@type': 'WebSite', name: 'La Pizarra', url: siteUrl },
+            isPartOf: { '@type': 'WebSite', name: 'La Pizarrina', url: siteUrl },
             inLanguage: 'es-ES',
           },
           {
             '@type': 'HowTo',
-            name: 'Cómo publicar el menú del día en La Pizarra',
+            name: 'Cómo publicar el menú del día en La Pizarrina',
             description:
               'Un comercial te da de alta y cada mañana envías la foto de tu pizarra por Telegram.',
             step: [
@@ -152,7 +152,7 @@ useHead({
             <article class="tarjeta-flujo" style="--i: 0">
               <p class="etiqueta">Paso 1</p>
               <h3>Contacta con un comercial</h3>
-              <p>Te explica el servicio y da de alta tu local en La Pizarra.</p>
+              <p>Te explica el servicio y da de alta tu local en La Pizarrina.</p>
             </article>
             <span class="flecha" aria-hidden="true">→</span>
             <article class="tarjeta-flujo" style="--i: 1">
@@ -170,7 +170,7 @@ useHead({
 
           <div class="cta">
             <div>
-              <h2>¿Quieres salir en La Pizarra?</h2>
+              <h2>¿Quieres salir en La Pizarrina?</h2>
               <p>
                 Habla con un comercial. Te enviará el enlace de alta en Telegram
                 cuando tu local esté listo.
@@ -187,7 +187,7 @@ useHead({
         <h2 class="titulo-seccion">Por qué existe</h2>
         <p>
           En Asturias el menú del día sigue viviendo en la pizarra de la puerta.
-          Comparar opciones obligaba a recorrer el barrio. La Pizarra no reescribe
+          Comparar opciones obligaba a recorrer el barrio. La Pizarrina no reescribe
           la carta: muestra la foto que manda el hostelero, cada día, para que
           quien come y quien cocina hablen el mismo idioma.
         </p>

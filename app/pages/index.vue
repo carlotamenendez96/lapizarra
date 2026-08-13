@@ -18,7 +18,7 @@ const fecha = fechaLarga()
 const hoyISO = fechaISO()
 const imagenSocial = computed(() => menus.value[0]?.photo_url || undefined)
 
-const titulo = 'Menú del día hoy en Asturias — precios y fotos | La Pizarra'
+const titulo = 'Menú del día hoy en Asturias — precios y fotos | La Pizarrina'
 const descripcion = computed(
   () =>
     `Consulta los menús del día de hoy en Asturias: ${menus.value.length} restaurantes con su pizarra, sus platos y su precio. Actualizado cada mañana.`,
@@ -32,7 +32,7 @@ useSeoMeta({
   ogType: 'website',
   ogUrl: siteUrl,
   ogLocale: 'es_ES',
-  ogSiteName: 'La Pizarra',
+  ogSiteName: 'La Pizarrina',
   ogImage: imagenSocial,
   twitterCard: 'summary_large_image',
   twitterImage: imagenSocial,
@@ -53,7 +53,7 @@ useHead({
             {
               '@type': 'WebSite',
               '@id': `${siteUrl}/#website`,
-              name: 'La Pizarra',
+              name: 'La Pizarrina',
               url: siteUrl,
               inLanguage: 'es-ES',
               description:
@@ -63,7 +63,7 @@ useHead({
             {
               '@type': 'Organization',
               '@id': `${siteUrl}/#organization`,
-              name: 'La Pizarra',
+              name: 'La Pizarrina',
               url: siteUrl,
               areaServed: {
                 '@type': 'AdministrativeArea',
@@ -154,7 +154,7 @@ useHead({
               Si quieres salir, un comercial te da de alta.
             </p>
           </div>
-          <NuxtLink to="/como-funciona" class="puente-cta">Así funciona La Pizarra</NuxtLink>
+          <NuxtLink to="/como-funciona" class="puente-cta">Así funciona La Pizarrina</NuxtLink>
         </div>
       </section>
     </main>

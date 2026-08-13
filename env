@@ -5,12 +5,10 @@ SUPABASE_URL=https://oeuobixauwbdfuinmhvy.supabase.co
 
 # Settings → API Keys → publishable key (o la antigua "anon").
 # Es una clave pública de solo lectura: las tablas están protegidas por RLS.
-SUPABASE_ANON_KEY=
+SUPABASE_ANON_KEY=sb_publishable_DS93bCKCuxE6jJyLfwXg1Q_g0zd4m0J
 
 # Dominio final, sin barra al final. Se usa en las URLs canónicas,
 # el sitemap y las etiquetas para redes sociales.
 SITE_URL=https://pizarrina.es
-
-# Enlace de contacto del comercial (WhatsApp).
-# El comercial es quien envía al hostelero su URL de alta en Telegram.
 CONTACTO_COMERCIAL_URL=https://wa.me/34645475153
+∫

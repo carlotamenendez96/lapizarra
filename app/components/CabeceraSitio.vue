@@ -35,13 +35,13 @@ function alCambiar(evento: Event) {
 <template>
   <header class="cabecera">
     <div class="contenedor fila">
-      <NuxtLink to="/" class="logo" aria-label="La Pizarra, inicio">
+      <NuxtLink to="/" class="logo" aria-label="La Pizarrina, inicio">
         <span class="logo-marco" aria-hidden="true">
           <span class="logo-linea l1" />
           <span class="logo-linea l2" />
           <span class="logo-linea l3" />
         </span>
-        <span class="logo-texto">La&nbsp;Pizarra</span>
+        <span class="logo-texto">La&nbsp;Pizarrina</span>
       </NuxtLink>
 
       <nav class="tabs" aria-label="Secciones">

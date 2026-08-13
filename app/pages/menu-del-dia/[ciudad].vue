@@ -37,7 +37,7 @@ const hoyISO = fechaISO()
 const url = `${siteUrl}/menu-del-dia/${slugCiudad}`
 const imagenSocial = computed(() => menus.value[0]?.photo_url || undefined)
 
-const titulo = computed(() => `Menú del día en ${nombreCiudad.value} hoy — precios y fotos | La Pizarra`)
+const titulo = computed(() => `Menú del día en ${nombreCiudad.value} hoy — precios y fotos | La Pizarrina`)
 const descripcion = computed(
   () =>
     `${menus.value.length} restaurantes con menú del día hoy en ${nombreCiudad.value}: mira la pizarra de cada sitio, los platos y el precio antes de decidir dónde comer.`,
@@ -51,7 +51,7 @@ useSeoMeta({
   ogType: 'website',
   ogUrl: url,
   ogLocale: 'es_ES',
-  ogSiteName: 'La Pizarra',
+  ogSiteName: 'La Pizarrina',
   ogImage: imagenSocial,
   twitterCard: 'summary_large_image',
   twitterImage: imagenSocial,
@@ -84,7 +84,7 @@ useHead({
               description: descripcion.value,
               dateModified: hoyISO,
               inLanguage: 'es-ES',
-              isPartOf: { '@type': 'WebSite', name: 'La Pizarra', url: siteUrl },
+              isPartOf: { '@type': 'WebSite', name: 'La Pizarrina', url: siteUrl },
               mainEntity: {
                 '@type': 'ItemList',
                 name: `Restaurantes con menú del día en ${nombreCiudad.value}`,
@@ -154,7 +154,7 @@ useHead({
       <section class="contenedor puente">
         <p>
           En {{ nombreCiudad }} ves las pizarras publicadas hoy, con foto, precio y dirección.
-          <NuxtLink to="/como-funciona">Cómo funciona La Pizarra</NuxtLink>
+          <NuxtLink to="/como-funciona">Cómo funciona La Pizarrina</NuxtLink>
         </p>
 
         <nav v-if="otrasCiudades.length" class="otras-wrap" aria-label="Otras ciudades">

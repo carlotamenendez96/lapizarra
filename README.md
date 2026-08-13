@@ -1,4 +1,4 @@
-# La Pizarra — web pública
+# La Pizarrina — web pública
 
 Web de menús del día de Asturias. Nuxt 4 con renderizado en servidor (SSR),
 que lee de Supabase y muestra la foto de la pizarra que cada hostelero
@@ -57,7 +57,7 @@ Copia `.env.example` a `.env`:
 ```
 SUPABASE_URL=https://oeuobixauwbdfuinmhvy.supabase.co
 SUPABASE_ANON_KEY=<tu publishable key>
-SITE_URL=https://lapizarra.es
+SITE_URL=https://pizarrina.es
 ```
 
 La clave pública (`anon`/`publishable`) es de solo lectura y las tablas

@@ -1,5 +1,5 @@
 -- =====================================================================
--- La Pizarra — soporte para la web pública (SEO)
+-- La Pizarrina — soporte para la web pública (SEO)
 -- Ejecutar entero en el SQL editor de Supabase.
 -- =====================================================================
 

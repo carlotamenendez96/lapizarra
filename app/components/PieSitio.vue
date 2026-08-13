@@ -10,7 +10,7 @@ const contacto = config.public.contactoComercialUrl as string
     <div class="contenedor">
       <div class="columnas">
         <div>
-          <p class="marca">La Pizarra</p>
+          <p class="marca">La Pizarrina</p>
           <p class="claim">
             Los menús del día de Asturias, tal y como están escritos en la pizarra del bar.
           </p>
@@ -37,7 +37,7 @@ const contacto = config.public.contactoComercialUrl as string
         </div>
       </div>
 
-      <p class="legal">© {{ new Date().getFullYear() }} La Pizarra · Asturias</p>
+      <p class="legal">© {{ new Date().getFullYear() }} La Pizarrina · Asturias</p>
     </div>
   </footer>
 </template>
