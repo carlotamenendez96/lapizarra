@@ -99,4 +99,12 @@ export default defineNuxtConfig({
   },
 
   future: { compatibilityVersion: 4 },
+
+  typescript: {
+    nodeTsConfig: {
+      compilerOptions: {
+        types: ['node'],
+      },
+    },
+  },
 })
