@@ -51,8 +51,8 @@ export function useSeoPagina(opciones: OpcionesSeoPagina) {
     ogLocale: 'es_ES',
     ogSiteName: 'La Pizarrina',
     ogImage: imagenAbsoluta,
-    ogImageWidth: computed(() => (esImagenPorDefecto.value ? OG_ANCHO : undefined)),
-    ogImageHeight: computed(() => (esImagenPorDefecto.value ? OG_ALTO : undefined)),
+    ogImageWidth: () => (esImagenPorDefecto.value ? OG_ANCHO : undefined),
+    ogImageHeight: () => (esImagenPorDefecto.value ? OG_ALTO : undefined),
     ogImageAlt: imageAlt,
     twitterCard: 'summary_large_image',
     twitterTitle: titulo,
@@ -68,23 +68,34 @@ export function useSeoPagina(opciones: OpcionesSeoPagina) {
         content: opciones.robots || 'index,follow,max-image-preview:large',
       },
     ],
-    script: opciones.jsonLd
-      ? [
-          {
-            type: 'application/ld+json',
-            innerHTML: computed(() =>
-              JSON.stringify({
-                '@context': 'https://schema.org',
-                '@graph': (() => {
-                  const valor = toValue(opciones.jsonLd!)
-                  return Array.isArray(valor) ? valor : [valor]
-                })(),
-              }),
-            ),
-          },
-        ]
-      : undefined,
   })
+
+  /* JSON-LD solo en el HTML del servidor: Google lo lee ahí.
+     En el cliente Unhead + innerHTML reactivo puede romper la hidratación
+     y Nuxt acaba mostrando error.vue un segundo después. */
+  if (opciones.jsonLd) {
+    useServerHead({
+      script: [
+        {
+          key: 'json-ld',
+          type: 'application/ld+json',
+          innerHTML: () => {
+            try {
+              const valor = toValue(opciones.jsonLd)
+              if (!valor) return ''
+              return JSON.stringify({
+                '@context': 'https://schema.org',
+                '@graph': Array.isArray(valor) ? valor : [valor],
+              })
+            }
+            catch {
+              return ''
+            }
+          },
+        },
+      ],
+    })
+  }
 
   return {
     siteUrl,

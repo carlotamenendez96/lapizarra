@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const config = useRuntimeConfig()
-const siteUrlBase = config.public.siteUrl.replace(/\/$/, '')
+const siteUrlBase = String(config.public.siteUrl || '').replace(/\/$/, '')
 const slugCiudad = String(route.params.ciudad)
 
 const { data } = await useAsyncData(`ciudad-${slugCiudad}`, () => datosCiudad(slugCiudad))

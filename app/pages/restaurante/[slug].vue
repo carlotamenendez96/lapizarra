@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const config = useRuntimeConfig()
-const siteUrlBase = config.public.siteUrl.replace(/\/$/, '')
+const siteUrlBase = String(config.public.siteUrl || '').replace(/\/$/, '')
 const slug = String(route.params.slug)
 
 const { data, error } = await useAsyncData(`local-${slug}`, () => datosRestaurante(slug))
@@ -173,16 +173,14 @@ const enlaceMapa = computed(
           <h2 class="eyebrow">Menú de hoy, {{ fecha }}</h2>
 
           <figure v-if="tieneMenuHoy" class="foto">
-            <NuxtImg
+            <img
               :src="local.photo_url!"
               :alt="`Pizarra con el menú del día de hoy en ${local.venue_name}, ${local.city}`"
               width="1000"
               height="1333"
-              sizes="(max-width: 768px) 100vw, 640px"
-              format="webp"
               fetchpriority="high"
               decoding="async"
-            />
+            >
             <figcaption>Foto de la pizarra enviada hoy por el restaurante.</figcaption>
           </figure>
 

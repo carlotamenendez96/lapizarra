@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const config = useRuntimeConfig()
-const siteUrlBase = config.public.siteUrl.replace(/\/$/, '')
+const siteUrlBase = String(config.public.siteUrl || '').replace(/\/$/, '')
 
 const { data } = await useAsyncData('home', () => datosHome())
 

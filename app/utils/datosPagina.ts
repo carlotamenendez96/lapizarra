@@ -31,7 +31,10 @@ export function datosHome() {
   return Promise.all([
     $fetch<MenuHoy[]>('/api/menus'),
     $fetch<Ciudad[]>('/api/ciudades'),
-  ]).then(([menus, ciudades]) => ({ menus, ciudades }))
+  ]).then(([menus, ciudades]) => ({ menus, ciudades })).catch(() => ({
+    menus: [] as MenuHoy[],
+    ciudades: [] as Ciudad[],
+  }))
 }
 
 export function datosCiudad(slug: string) {

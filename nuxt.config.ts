@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   // en el HTML. Con una SPA normal indexaría una página vacía.
   ssr: true,
 
-  modules: ['@nuxt/fonts', '@nuxt/image'],
+  modules: ['@nuxt/fonts'],
 
   css: ['~/assets/css/main.css'],
 
@@ -66,20 +66,6 @@ export default defineNuxtConfig({
         weights: [400, 500],
       },
     ],
-  },
-
-  // Listados siguen usando thumb_url de Telegram; IPX solo genera srcset/WebP.
-  image: {
-    domains: [
-      ...(process.env.SUPABASE_URL
-        ? [new URL(process.env.SUPABASE_URL).hostname]
-        : []),
-      ...(process.env.NUXT_SUPABASE_URL
-        ? [new URL(process.env.NUXT_SUPABASE_URL).hostname]
-        : []),
-      'oeuobixauwbdfuinmhvy.supabase.co',
-    ],
-    format: ['webp'],
   },
 
   app: {
