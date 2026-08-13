@@ -51,40 +51,49 @@ function urlSupabase(cruda: string): string {
 async function rpc<T>(event: any, fn: string, args: Record<string, unknown> = {}): Promise<T> {
   const config = useRuntimeConfig(event)
 
-  /* Nuxt congela runtimeConfig al compilar, así que en un hosting donde
-     las variables se definen después del build (Vercel, Netlify, Render...)
-     hay que volver a leer process.env en caliente. Con este fallback
-     funcionan tanto SUPABASE_URL como NUXT_SUPABASE_URL. */
+  /* process.env primero: el runtimeConfig horneado puede traer la URL
+     corrupta (ttps://) y, al ser truthy, tapaba la variable buena de Vercel. */
   const supabaseUrl = urlSupabase(
-    String(config.supabaseUrl || env('SUPABASE_URL') || env('NUXT_SUPABASE_URL') || ''),
+    env('SUPABASE_URL') || env('NUXT_SUPABASE_URL') || String(config.supabaseUrl || ''),
   )
   const supabaseAnonKey =
-    config.supabaseAnonKey || env('SUPABASE_ANON_KEY') || env('NUXT_SUPABASE_ANON_KEY')
+    env('SUPABASE_ANON_KEY') || env('NUXT_SUPABASE_ANON_KEY') || config.supabaseAnonKey
 
   if (!supabaseUrl || supabaseUrl === 'https://' || !supabaseAnonKey) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'Faltan SUPABASE_URL o SUPABASE_ANON_KEY en las variables de entorno.',
+      message: 'Faltan SUPABASE_URL o SUPABASE_ANON_KEY en las variables de entorno de Vercel.',
     })
   }
 
+  const destino = `${supabaseUrl}/rest/v1/rpc/${fn}`
+
   /* fetch nativo: el $fetch de Nitro usa la petición local como base
      (http://localhost/api/...) y corrompe URLs https externas en Vercel. */
-  const respuesta = await fetch(`${supabaseUrl}/rest/v1/rpc/${fn}`, {
-    method: 'POST',
-    headers: {
-      apikey: supabaseAnonKey,
-      Authorization: `Bearer ${supabaseAnonKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(args),
-  })
+  let respuesta: Response
+  try {
+    respuesta = await fetch(destino, {
+      method: 'POST',
+      headers: {
+        apikey: String(supabaseAnonKey),
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(args),
+    })
+  } catch (error) {
+    const causa = error instanceof Error ? error.message : String(error)
+    throw createError({
+      statusCode: 502,
+      message: `No se pudo contactar con Supabase (${destino}): ${causa}`,
+    })
+  }
 
   if (!respuesta.ok) {
     const detalle = await respuesta.text().catch(() => '')
     throw createError({
       statusCode: respuesta.status,
-      statusMessage: `Supabase RPC ${fn} falló (${respuesta.status})${detalle ? `: ${detalle.slice(0, 180)}` : ''}`,
+      message: `Supabase RPC ${fn} falló (${respuesta.status})${detalle ? `: ${detalle.slice(0, 180)}` : ''}`,
     })
   }
 

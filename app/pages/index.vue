@@ -4,13 +4,20 @@ import type { MenuHoy, Ciudad } from '~~/server/utils/supabase'
 const config = useRuntimeConfig()
 const siteUrl = config.public.siteUrl.replace(/\/$/, '')
 
-const { data } = await useAsyncData('home', async () => {
+const { data, error } = await useAsyncData('home', async () => {
   const [menus, ciudades] = await Promise.all([
     $fetch<MenuHoy[]>('/api/menus'),
     $fetch<Ciudad[]>('/api/ciudades'),
   ])
   return { menus, ciudades }
 })
+
+if (error.value) {
+  throw createError({
+    statusCode: error.value.statusCode || 503,
+    message: error.value.message || 'No se pudieron cargar los menús',
+  })
+}
 
 const menus = computed(() => data.value?.menus ?? [])
 const ciudades = computed(() => data.value?.ciudades ?? [])

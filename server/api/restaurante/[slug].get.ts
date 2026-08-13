@@ -3,7 +3,7 @@ export default defineEventHandler(async (event) => {
   const filas = await getRestaurante(event, slug)
 
   if (!filas?.length) {
-    throw createError({ statusCode: 404, statusMessage: 'Restaurante no encontrado' })
+    throw createError({ statusCode: 404, message: 'Restaurante no encontrado' })
   }
 
   return filas[0]

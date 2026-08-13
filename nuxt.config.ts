@@ -8,10 +8,11 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   runtimeConfig: {
-    // Solo servidor: la web nunca habla con Supabase desde el navegador,
-    // así el cliente no descarga el SDK y las respuestas se pueden cachear.
-    supabaseUrl: process.env.SUPABASE_URL,
-    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    // Vacío a propósito: si aquí se mete process.env.SUPABASE_URL, Nitro
+    // hornea el https:// en el build y en Vercel la URL puede quedar rota
+    // (ttps://). En runtime se leen SUPABASE_* o NUXT_SUPABASE_*.
+    supabaseUrl: '',
+    supabaseAnonKey: '',
     public: {
       siteUrl: process.env.SITE_URL || 'https://lapizarra.es',
       // WhatsApp del comercial (no el bot de publicación).
