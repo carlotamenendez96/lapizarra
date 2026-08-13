@@ -29,7 +29,7 @@ const contacto = config.public.contactoComercialUrl as string
         <div>
           <p class="titulo">¿Tienes un bar?</p>
           <p class="claim">
-            El alta la gestiona un comercial: te enviará tu enlace personal de Telegram para publicar el menú.
+            Un comercial te envía el enlace de alta en Telegram. Tú registras el local y publicas el menú con una foto.
           </p>
           <a class="enlace-alta enlace-alta--boton" :href="contacto" target="_blank" rel="noopener">
             Hablar con un comercial

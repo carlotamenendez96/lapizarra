@@ -9,7 +9,7 @@ const { data: ciudades } = await useAsyncData('ciudades-como', () => datosCiudad
 
 const titulo = 'Cómo funciona La Pizarrina — menú del día en Asturias'
 const descripcion =
-  'La Pizarrina publica cada mañana la foto de la pizarra de bares y restaurantes de Asturias. Si tienes un local, un comercial te da tu enlace de alta en Telegram.'
+  'La Pizarrina publica cada mañana la foto de la pizarra de bares y restaurantes de Asturias. Si tienes un local, un comercial te envía el enlace de alta en Telegram.'
 
 useSeoPagina({
   title: titulo,
@@ -38,13 +38,13 @@ useSeoPagina({
       '@type': 'HowTo',
       name: 'Cómo publicar el menú del día en La Pizarrina',
       description:
-        'Un comercial te da de alta y cada mañana envías la foto de tu pizarra por Telegram.',
+        'Un comercial te envía el enlace de alta en Telegram. Registras el local y cada mañana mandas la foto de la pizarra.',
       step: [
         {
           '@type': 'HowToStep',
           position: 1,
           name: 'Habla con un comercial',
-          text: 'Contacta con el equipo. Te enviarán tu enlace personal de alta en Telegram.',
+          text: 'Contacta con el equipo. Te enviarán tu enlace de alta en Telegram.',
         },
         {
           '@type': 'HowToStep',
@@ -76,15 +76,15 @@ useSeoPagina({
           name: '¿Cómo publico el menú de mi bar en La Pizarrina?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Un comercial te da de alta y te envía tu enlace personal de Telegram. Cada mañana fotografías la pizarra y la mandas por ese enlace; en minutos aparece en la web.',
+            text: 'Un comercial te envía tu enlace de alta en Telegram. Con él registras el local y, cada mañana, fotografías la pizarra y la mandas; en minutos aparece en la web.',
           },
         },
         {
           '@type': 'Question',
-          name: '¿Hay alta automática en la web?',
+          name: '¿Cómo doy de alta mi local?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'No. El alta la gestiona un comercial, que registra el local y te pasa tu URL personal de Telegram para publicar el menú.',
+            text: 'Un comercial te envía el enlace de alta en Telegram. Tú registras el local desde ese enlace y, a partir de ahí, publicar el menú es mandar una foto.',
           },
         },
         {
@@ -158,22 +158,22 @@ useSeoPagina({
         <div class="contenedor bloque">
           <h2 class="titulo-seccion">Para el bar o restaurante</h2>
           <p class="intro">
-            No hay alta automática en la web. Un comercial te registra el local
-            y te pasa <strong>tu URL personal de Telegram</strong>. A partir de ahí,
-            publicar el menú es mandar una foto.
+            Un comercial te envía tu <strong>enlace de alta en Telegram</strong>.
+            Con él registras el local y, a partir de ahí, publicar el menú es
+            mandar una foto.
           </p>
 
           <div class="carril">
             <article class="tarjeta-flujo" style="--i: 0">
               <p class="etiqueta">Paso 1</p>
               <h3>Contacta con un comercial</h3>
-              <p>Te explica el servicio y da de alta tu local en La Pizarrina.</p>
+              <p>Te explica el servicio y te envía tu enlace de alta en Telegram.</p>
             </article>
             <span class="flecha" aria-hidden="true">→</span>
             <article class="tarjeta-flujo" style="--i: 1">
               <p class="etiqueta">Paso 2</p>
-              <h3>Recibes tu enlace</h3>
-              <p>Es tu acceso privado de Telegram. No es un bot público abierto.</p>
+              <h3>Das de alta el local</h3>
+              <p>Abres el enlace, registras tu bar y ya puedes publicar el menú.</p>
             </article>
             <span class="flecha" aria-hidden="true">→</span>
             <article class="tarjeta-flujo" style="--i: 2">
