@@ -1,0 +1,165 @@
+/* =====================================================================
+   La Pizarra — sistema de diseño
+
+   Sidrería contemporánea: pizarra profunda, lino cálido y terracota de
+   sidra. La pizarra sigue siendo el gesto de marca; el resto es papel
+   limpio para que las fotos de los menús respiren.
+   ===================================================================== */
+
+:root {
+  --pizarra: #101917;
+  --pizarra-claro: #1c2a26;
+  --tiza: #f4ead6;
+  --tiza-suave: rgba(244, 234, 214, 0.72);
+  --papel: #f6f1e8;
+  --papel-hueso: #ebe4d6;
+  --blanco: #fffdf8;
+  --grafito: #1a221f;
+  --grafito-suave: #5e6b66;
+  --sidra: #c24e1d;
+  --sidra-hover: #a84016;
+  --sidra-clara: #f6d8c6;
+  --borde: #ddd4c4;
+
+  --display: 'Fraunces', Georgia, serif;
+  --texto: 'Manrope', system-ui, -apple-system, sans-serif;
+  --dato: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --paso-1: clamp(0.78rem, 0.76rem + 0.1vw, 0.84rem);
+  --paso-0: clamp(0.95rem, 0.92rem + 0.15vw, 1.05rem);
+  --paso-1-arriba: clamp(1.15rem, 1.08rem + 0.35vw, 1.38rem);
+  --paso-2: clamp(1.5rem, 1.32rem + 0.8vw, 2.05rem);
+  --paso-3: clamp(2.05rem, 1.55rem + 2.2vw, 3.55rem);
+
+  --radio: 18px;
+  --radio-sm: 12px;
+  --radio-pill: 999px;
+  --ancho: 1180px;
+  --sombra: 0 18px 50px -24px rgba(16, 25, 23, 0.38);
+  --sombra-suave: 0 8px 24px -16px rgba(16, 25, 23, 0.22);
+  --transicion: 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--grafito);
+  font-family: var(--texto);
+  font-size: var(--paso-0);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--sidra-clara);
+  color: var(--pizarra);
+}
+
+h1, h2, h3 {
+  font-family: var(--display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin: 0;
+  font-variation-settings: 'SOFT' 30, 'WONK' 1;
+}
+
+a { color: inherit; }
+
+img { display: block; max-width: 100%; }
+
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+}
+
+/* --- Banda de pizarra ---------------------------------------------- */
+.pizarra-banda {
+  background-color: var(--pizarra);
+  background-image:
+    radial-gradient(ellipse 70% 80% at 12% 20%, rgba(194, 78, 29, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 70% at 88% 80%, rgba(244, 234, 214, 0.06) 0%, transparent 50%);
+  color: var(--tiza);
+  position: relative;
+  overflow: hidden;
+}
+
+.pizarra-banda::before {
+  content: '';
+  position: absolute;
+  inset: auto -8% -40% auto;
+  width: min(42vw, 380px);
+  height: min(42vw, 380px);
+  border: 1px solid rgba(244, 234, 214, 0.08);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.pizarra-banda::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+.pizarra-banda > * { position: relative; z-index: 1; }
+
+/* --- Chapa de precio ----------------------------------------------- */
+.precio {
+  font-family: var(--dato);
+  font-weight: 500;
+  font-size: var(--paso-1);
+  background: var(--pizarra);
+  color: var(--tiza);
+  padding: 0.32em 0.7em;
+  border-radius: var(--radio-pill);
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.precio--libre {
+  background: transparent;
+  color: var(--grafito-suave);
+  border: 1px dashed var(--borde);
+}
+
+/* --- Utilidades ---------------------------------------------------- */
+.eyebrow {
+  font-family: var(--dato);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--grafito-suave);
+  font-weight: 500;
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--sidra);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
