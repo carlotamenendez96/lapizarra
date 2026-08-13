@@ -7,10 +7,18 @@
  * ejecución (ver el comentario en server/utils/supabase.ts).
  */
 export default defineNuxtPlugin(() => {
-  const origen = process.env.SUPABASE_URL || process.env.NUXT_SUPABASE_URL
-  if (!origen) return
+  const cruda = process.env.SUPABASE_URL || process.env.NUXT_SUPABASE_URL
+  if (!cruda) return
 
-  useHead({
-    link: [{ rel: 'preconnect', href: new URL(origen).origin, crossorigin: '' }],
-  })
+  try {
+    let url = cruda.trim().replace(/^['"]|['"]$/g, '').replace(/\/+$/, '')
+    if (url.startsWith('ttps://')) url = `h${url}`
+    if (!/^https?:\/\//i.test(url)) url = `https://${url}`
+    useHead({
+      link: [{ rel: 'preconnect', href: new URL(url).origin, crossorigin: '' }],
+    })
+  }
+  catch {
+    /* Un preconnect mal formado no debe tumbar el SSR de la home. */
+  }
 })

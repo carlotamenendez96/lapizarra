@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import type { MenuHoy, Ciudad } from '~~/server/utils/supabase'
-
 const route = useRoute()
 const config = useRuntimeConfig()
 const siteUrlBase = config.public.siteUrl.replace(/\/$/, '')
 const slugCiudad = String(route.params.ciudad)
 
-const { data } = await useAsyncData(`ciudad-${slugCiudad}`, async () => {
-  const [menus, ciudades] = await Promise.all([
-    $fetch<MenuHoy[]>('/api/menus', { query: { ciudad: slugCiudad } }),
-    $fetch<Ciudad[]>('/api/ciudades'),
-  ])
-  return { menus, ciudades }
-})
+const { data } = await useAsyncData(`ciudad-${slugCiudad}`, () => datosCiudad(slugCiudad))
 
 const menus = computed(() => data.value?.menus ?? [])
 const ciudades = computed(() => data.value?.ciudades ?? [])

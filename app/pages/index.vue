@@ -1,16 +1,8 @@
 <script setup lang="ts">
-import type { MenuHoy, Ciudad } from '~~/server/utils/supabase'
-
 const config = useRuntimeConfig()
 const siteUrlBase = config.public.siteUrl.replace(/\/$/, '')
 
-const { data } = await useAsyncData('home', async () => {
-  const [menus, ciudades] = await Promise.all([
-    $fetch<MenuHoy[]>('/api/menus'),
-    $fetch<Ciudad[]>('/api/ciudades'),
-  ])
-  return { menus, ciudades }
-})
+const { data } = await useAsyncData('home', () => datosHome())
 
 const menus = computed(() => data.value?.menus ?? [])
 const ciudades = computed(() => data.value?.ciudades ?? [])

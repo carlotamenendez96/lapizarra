@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import type { Ciudad } from '~~/server/utils/supabase'
-
 const config = useRuntimeConfig()
 const siteUrlBase = config.public.siteUrl.replace(/\/$/, '')
 const contacto = config.public.contactoComercialUrl as string
 const url = `${siteUrlBase}/como-funciona`
 
-const { data: ciudades } = await useAsyncData('ciudades-como', () =>
-  $fetch<Ciudad[]>('/api/ciudades').catch(() => [] as Ciudad[]),
-)
+const { data: ciudades } = await useAsyncData('ciudades-como', () => datosCiudades())
 
 const titulo = 'Cómo funciona La Pizarrina — menú del día en Asturias'
 const descripcion =

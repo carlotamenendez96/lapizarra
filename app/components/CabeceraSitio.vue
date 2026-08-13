@@ -49,6 +49,7 @@ function alCambiar(evento: Event) {
           to="/"
           class="tab"
           :class="{ 'tab--activo': enMenus }"
+          @click="clearError"
         >
           Menús de hoy
         </NuxtLink>

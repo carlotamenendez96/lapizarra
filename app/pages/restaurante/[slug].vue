@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import type { MenuHoy, Ciudad } from '~~/server/utils/supabase'
-
 const route = useRoute()
 const config = useRuntimeConfig()
 const siteUrlBase = config.public.siteUrl.replace(/\/$/, '')
 const slug = String(route.params.slug)
 
-const { data, error } = await useAsyncData(`local-${slug}`, async () => {
-  const [local, ciudades] = await Promise.all([
-    $fetch<MenuHoy>(`/api/restaurante/${slug}`),
-    $fetch<Ciudad[]>('/api/ciudades').catch(() => [] as Ciudad[]),
-  ])
-  return { local, ciudades }
-})
+const { data, error } = await useAsyncData(`local-${slug}`, () => datosRestaurante(slug))
 
 if (error.value || !data.value?.local) {
   throw createError({
