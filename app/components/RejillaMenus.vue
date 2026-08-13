@@ -51,49 +51,66 @@ function elegirBarrio(nombre: string) {
 
 <template>
   <div>
-    <div v-if="mostrarBarrios" class="barrios">
-      <h3 class="eyebrow">Filtra por barrio</h3>
-      <div class="chips" role="group" aria-label="Barrio">
-        <button
-          type="button"
-          class="chip"
-          :class="{ 'chip--activo': !barrioActivo }"
-          @click="elegirBarrio('')"
-        >
-          Todos <span class="chip-num">{{ menus.length }}</span>
-        </button>
-        <button
-          v-for="b in barrios"
-          :key="b.nombre"
-          type="button"
-          class="chip"
-          :class="{ 'chip--activo': barrioActivo === b.nombre }"
-          @click="elegirBarrio(b.nombre)"
-        >
-          {{ b.nombre }} <span class="chip-num">{{ b.total }}</span>
-        </button>
+    <div class="filtros" :class="{ 'filtros--barrios': mostrarBarrios }">
+      <div v-if="mostrarBarrios" class="barrios">
+        <h3 class="eyebrow">Dónde quieres comer</h3>
+        <div class="mosaico" role="group" aria-label="Barrio">
+          <button
+            type="button"
+            class="lugar"
+            :class="{ 'lugar--activo': !barrioActivo }"
+            :aria-pressed="!barrioActivo"
+            @click="elegirBarrio('')"
+          >
+            <span class="lugar-icono" aria-hidden="true">
+              <span /><span /><span />
+            </span>
+            <span class="lugar-nombre">Toda la ciudad</span>
+            <span class="lugar-dato">{{ menus.length }} {{ menus.length === 1 ? 'pizarra' : 'pizarras' }}</span>
+          </button>
+          <button
+            v-for="b in barrios"
+            :key="b.nombre"
+            type="button"
+            class="lugar"
+            :class="{ 'lugar--activo': barrioActivo === b.nombre }"
+            :aria-pressed="barrioActivo === b.nombre"
+            @click="elegirBarrio(b.nombre)"
+          >
+            <span class="lugar-icono lugar-icono--pin" aria-hidden="true">
+              <svg viewBox="0 0 16 16" width="14" height="14">
+                <path
+                  fill="currentColor"
+                  d="M8 1.5a4.6 4.6 0 0 0-4.6 4.6c0 3.2 4.6 8.4 4.6 8.4s4.6-5.2 4.6-8.4A4.6 4.6 0 0 0 8 1.5Zm0 6.2a1.6 1.6 0 1 1 0-3.2 1.6 1.6 0 0 1 0 3.2Z"
+                />
+              </svg>
+            </span>
+            <span class="lugar-nombre">{{ b.nombre }}</span>
+            <span class="lugar-dato">{{ b.total }} {{ b.total === 1 ? 'pizarra' : 'pizarras' }}</span>
+          </button>
+        </div>
       </div>
-    </div>
 
-    <div class="barra">
-      <label class="campo">
-        <span class="solo-lectores">Buscar restaurante por nombre</span>
-        <svg class="lupa" viewBox="0 0 20 20" aria-hidden="true" width="18" height="18">
-          <circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2" />
-          <path d="M13.5 13.5 18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-        </svg>
-        <input
-          v-model="consulta"
-          type="search"
-          placeholder="Buscar un restaurante o una zona"
-          autocomplete="off"
-          enterkeyhint="search"
-        >
-      </label>
+      <div class="barra">
+        <label class="campo">
+          <span class="solo-lectores">Buscar restaurante por nombre</span>
+          <svg class="lupa" viewBox="0 0 20 20" aria-hidden="true" width="18" height="18">
+            <circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2" />
+            <path d="M13.5 13.5 18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          <input
+            v-model="consulta"
+            type="search"
+            placeholder="Buscar un restaurante o una zona"
+            autocomplete="off"
+            enterkeyhint="search"
+          >
+        </label>
 
-      <p class="cuenta" aria-live="polite">
-        {{ filtrados.length }} {{ filtrados.length === 1 ? 'sitio' : 'sitios' }}
-      </p>
+        <p class="cuenta" aria-live="polite">
+          {{ filtrados.length }} {{ filtrados.length === 1 ? 'sitio' : 'sitios' }}
+        </p>
+      </div>
     </div>
 
     <div v-if="filtrados.length" class="rejilla">
@@ -120,56 +137,143 @@ function elegirBarrio(nombre: string) {
 </template>
 
 <style scoped>
-.barrios { margin-bottom: 1.35rem; }
+.filtros { margin-bottom: 1.7rem; }
 
-.chips {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0.75rem 0 0;
-  padding: 0;
+.filtros--barrios {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 1.15rem 1.2rem 1.25rem;
+  box-shadow: var(--sombra-suave);
 }
 
-.chip {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.45rem;
-  padding: 0.48rem 0.95rem;
+.barrios { margin-bottom: 1.15rem; }
+
+.mosaico {
+  display: flex;
+  gap: 0.65rem;
+  overflow-x: auto;
+  margin: 0.85rem 0 0;
+  padding: 0.1rem 0 0.35rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+
+.lugar {
+  flex: 1 1 9.5rem;
+  min-width: 9.5rem;
+  max-width: 16rem;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.28rem;
+  text-align: left;
+  padding: 0.9rem 1rem 0.95rem;
   border: 1px solid var(--borde);
-  border-radius: var(--radio-pill);
+  border-radius: var(--radio-sm);
   background: var(--papel);
   font-family: inherit;
-  font-size: var(--paso-0);
-  font-weight: 500;
   color: inherit;
   cursor: pointer;
-  transition: background var(--transicion), border-color var(--transicion), color var(--transicion);
+  transition:
+    background var(--transicion),
+    border-color var(--transicion),
+    color var(--transicion),
+    transform var(--transicion),
+    box-shadow var(--transicion);
 }
 
-.chip:hover,
-.chip--activo {
+.lugar:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-suave);
+  border-color: color-mix(in srgb, var(--pizarra) 35%, var(--borde));
+}
+
+.lugar--activo {
   background: var(--pizarra);
   border-color: var(--pizarra);
   color: var(--tiza);
+  box-shadow: var(--sombra-suave);
 }
 
-.chip-num {
+.lugar--activo:hover { transform: none; }
+
+.lugar-icono {
+  width: 1.7rem;
+  height: 1.35rem;
+  border-radius: 7px;
+  background: var(--blanco);
+  border: 1px dashed var(--borde);
+  display: grid;
+  place-items: center;
+  grid-template-columns: repeat(3, 5px);
+  gap: 3px;
+  padding: 0 5px;
+  margin-bottom: 0.2rem;
+}
+
+.lugar-icono span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--pizarra);
+  opacity: 0.35;
+}
+
+.lugar-icono span:nth-child(2) {
+  opacity: 1;
+  background: var(--sidra);
+}
+
+.lugar-icono--pin {
+  display: grid;
+  place-items: center;
+  color: var(--sidra);
+  border-style: solid;
+}
+
+.lugar--activo .lugar-icono {
+  background: rgba(244, 234, 214, 0.1);
+  border-color: rgba(244, 234, 214, 0.16);
+}
+
+.lugar--activo .lugar-icono span { background: var(--tiza); }
+.lugar--activo .lugar-icono span:nth-child(2) { background: var(--sidra-clara); }
+.lugar--activo .lugar-icono--pin { color: var(--tiza); }
+
+.lugar-nombre {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: var(--paso-1-arriba);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.lugar-dato {
   font-family: var(--dato);
-  font-size: var(--paso-1);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--sidra);
 }
 
-.chip:hover .chip-num,
-.chip--activo .chip-num { color: var(--sidra-clara); }
+.lugar--activo .lugar-dato { color: var(--sidra-clara); }
 
 .barra {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.7rem;
   flex-wrap: wrap;
 }
+
+.filtros--barrios .barra {
+  margin: 0;
+  padding-top: 1.05rem;
+  border-top: 1px solid var(--borde);
+}
+
+.filtros--barrios .campo input { background: var(--papel); }
 
 .campo {
   position: relative;

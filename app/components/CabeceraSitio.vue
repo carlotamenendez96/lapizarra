@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   ciudades?: Array<{ city: string; city_slug: string; total: number }>
 }>()
 
@@ -26,10 +26,70 @@ const seleccion = computed({
   },
 })
 
-function alCambiar(evento: Event) {
-  const valor = (evento.target as HTMLSelectElement).value
-  seleccion.value = valor
+const abierto = ref(false)
+const raiz = ref<HTMLElement | null>(null)
+const boton = ref<HTMLButtonElement | null>(null)
+const menuEl = ref<HTMLElement | null>(null)
+const menuEstilo = ref<Record<string, string>>({})
+
+const etiqueta = computed(() => {
+  if (!seleccion.value) return 'Toda Asturias'
+  const ciudad = props.ciudades?.find((c) => c.city_slug === seleccion.value)
+  return ciudad ? `${ciudad.city} (${ciudad.total})` : 'Toda Asturias'
+})
+
+function colocarMenu() {
+  const el = boton.value
+  if (!el) return
+  const caja = el.getBoundingClientRect()
+  menuEstilo.value = {
+    top: `${Math.round(caja.bottom + 8)}px`,
+    left: `${Math.round(caja.left)}px`,
+    width: `${Math.round(caja.width)}px`,
+  }
 }
+
+function alternar() {
+  if (abierto.value) {
+    abierto.value = false
+    return
+  }
+  colocarMenu()
+  abierto.value = true
+}
+
+function elegir(slug: string) {
+  seleccion.value = slug
+  abierto.value = false
+}
+
+function alClicFuera(evento: PointerEvent) {
+  const nodo = evento.target as Node
+  if (raiz.value?.contains(nodo) || menuEl.value?.contains(nodo)) return
+  abierto.value = false
+}
+
+function alTecla(evento: KeyboardEvent) {
+  if (evento.key === 'Escape') abierto.value = false
+}
+
+watch(() => route.fullPath, () => {
+  abierto.value = false
+})
+
+onMounted(() => {
+  document.addEventListener('pointerdown', alClicFuera)
+  document.addEventListener('keydown', alTecla)
+  window.addEventListener('resize', colocarMenu)
+  window.addEventListener('scroll', colocarMenu, true)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', alClicFuera)
+  document.removeEventListener('keydown', alTecla)
+  window.removeEventListener('resize', colocarMenu)
+  window.removeEventListener('scroll', colocarMenu, true)
+})
 </script>
 
 <template>
@@ -70,23 +130,50 @@ function alCambiar(evento: Event) {
         </a>
       </nav>
 
-      <div v-if="ciudades?.length" class="selector">
-        <label class="solo-lectores" for="selector-ciudad">Ciudad</label>
-        <select
+      <div v-if="ciudades?.length" ref="raiz" class="selector">
+        <button
           id="selector-ciudad"
+          ref="boton"
+          type="button"
           class="select"
-          :value="seleccion"
-          @change="alCambiar"
+          :class="{ 'select--abierto': abierto }"
+          aria-label="Ciudad"
+          aria-haspopup="listbox"
+          :aria-expanded="abierto"
+          aria-controls="lista-ciudades"
+          @click="alternar"
         >
-          <option value="">Toda Asturias</option>
-          <option
-            v-for="c in ciudades"
-            :key="c.city_slug"
-            :value="c.city_slug"
+          <span class="select-texto">{{ etiqueta }}</span>
+        </button>
+        <Teleport to="body">
+          <ul
+            v-show="abierto"
+            id="lista-ciudades"
+            ref="menuEl"
+            class="menu-ciudad"
+            role="listbox"
+            aria-labelledby="selector-ciudad"
+            :style="menuEstilo"
           >
-            {{ c.city }} ({{ c.total }})
-          </option>
-        </select>
+            <li role="option" :aria-selected="!seleccion">
+              <button type="button" class="opcion" :class="{ 'opcion--activa': !seleccion }" @click="elegir('')">
+                <span class="check" aria-hidden="true">{{ !seleccion ? '✓' : '' }}</span>
+                Toda Asturias
+              </button>
+            </li>
+            <li v-for="c in ciudades" :key="c.city_slug" role="option" :aria-selected="seleccion === c.city_slug">
+              <button
+                type="button"
+                class="opcion"
+                :class="{ 'opcion--activa': seleccion === c.city_slug }"
+                @click="elegir(c.city_slug)"
+              >
+                <span class="check" aria-hidden="true">{{ seleccion === c.city_slug ? '✓' : '' }}</span>
+                {{ c.city }} ({{ c.total }})
+              </button>
+            </li>
+          </ul>
+        </Teleport>
       </div>
     </div>
   </header>
@@ -219,18 +306,68 @@ function alCambiar(evento: Event) {
   border-radius: var(--radio-pill);
   padding: 0.5rem 2.15rem 0.5rem 1rem;
   min-width: 11.5rem;
+  width: 100%;
   cursor: pointer;
+  text-align: left;
   transition: border-color var(--transicion), box-shadow var(--transicion);
+}
+
+.select-texto {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .select:hover {
   border-color: color-mix(in srgb, var(--pizarra) 40%, var(--borde));
 }
 
-.select:focus {
+.select:focus,
+.select--abierto {
   outline: none;
   border-color: var(--sidra);
   box-shadow: 0 0 0 3px var(--sidra-clara);
+}
+
+.menu-ciudad {
+  position: fixed;
+  z-index: 80;
+  margin: 0;
+  padding: 0.4rem;
+  list-style: none;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  box-shadow: var(--sombra);
+}
+
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: var(--paso-1);
+  font-weight: 500;
+  color: var(--grafito);
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+}
+
+.opcion:hover { background: var(--papel-hueso); }
+
+.opcion--activa { font-weight: 600; }
+
+.check {
+  width: 1rem;
+  flex: none;
+  color: var(--sidra);
+  font-size: 0.85rem;
 }
 
 @media (max-width: 900px) {
