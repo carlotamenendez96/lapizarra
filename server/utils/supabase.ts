@@ -37,7 +37,7 @@ function env(nombre: string): string | undefined {
   /* Acceso dinámico: si se escribe process.env.SUPABASE_URL, Nitro puede
      congelar el valor (o undefined) en el build de Vercel. */
   const valor = process.env[nombre]
-  return valor?.trim() || undefined
+  return valor?.trim().replace(/^['"]|['"]$/g, '') || undefined
 }
 
 function urlSupabase(cruda: string): string {
@@ -56,8 +56,9 @@ async function rpc<T>(event: any, fn: string, args: Record<string, unknown> = {}
   const supabaseUrl = urlSupabase(
     env('SUPABASE_URL') || env('NUXT_SUPABASE_URL') || String(config.supabaseUrl || ''),
   )
-  const supabaseAnonKey =
-    env('SUPABASE_ANON_KEY') || env('NUXT_SUPABASE_ANON_KEY') || config.supabaseAnonKey
+  const supabaseAnonKey = String(
+    env('SUPABASE_ANON_KEY') || env('NUXT_SUPABASE_ANON_KEY') || config.supabaseAnonKey || '',
+  ).replace(/^['"]|['"]$/g, '')
 
   if (!supabaseUrl || supabaseUrl === 'https://' || !supabaseAnonKey) {
     throw createError({
@@ -67,6 +68,15 @@ async function rpc<T>(event: any, fn: string, args: Record<string, unknown> = {}
   }
 
   const destino = `${supabaseUrl}/rest/v1/rpc/${fn}`
+  const cabeceras: Record<string, string> = {
+    apikey: supabaseAnonKey,
+    'Content-Type': 'application/json',
+  }
+  /* sb_publishable_ no es un JWT: si va en Authorization, Supabase
+     responde 401 Invalid JWT y Vercel tumba la función. */
+  if (supabaseAnonKey.startsWith('eyJ')) {
+    cabeceras.Authorization = `Bearer ${supabaseAnonKey}`
+  }
 
   /* fetch nativo: el $fetch de Nitro usa la petición local como base
      (http://localhost/api/...) y corrompe URLs https externas en Vercel. */
@@ -74,11 +84,7 @@ async function rpc<T>(event: any, fn: string, args: Record<string, unknown> = {}
   try {
     respuesta = await fetch(destino, {
       method: 'POST',
-      headers: {
-        apikey: String(supabaseAnonKey),
-        Authorization: `Bearer ${supabaseAnonKey}`,
-        'Content-Type': 'application/json',
-      },
+      headers: cabeceras,
       body: JSON.stringify(args),
     })
   } catch (error) {
@@ -92,7 +98,7 @@ async function rpc<T>(event: any, fn: string, args: Record<string, unknown> = {}
   if (!respuesta.ok) {
     const detalle = await respuesta.text().catch(() => '')
     throw createError({
-      statusCode: respuesta.status,
+      statusCode: 502,
       message: `Supabase RPC ${fn} falló (${respuesta.status})${detalle ? `: ${detalle.slice(0, 180)}` : ''}`,
     })
   }
