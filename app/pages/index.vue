@@ -149,7 +149,7 @@ const { siteUrl } = useSeoPagina({
             <h2>¿Tienes un bar?</h2>
             <p>
               Las fotos son las pizarras reales de cada local, actualizadas esta mañana.
-              Apuntarse es completamente gratis — pide el enlace de alta y en minutos estás publicando.
+              Mandas la foto de tu pizarra cada mañana y tu menú aparece en la web de tu ciudad. Totalmente gratis, sin cuotas ni comisiones.
             </p>
           </div>
           <NuxtLink to="/como-funciona" class="puente-cta">Así funciona La Pizarrina</NuxtLink>

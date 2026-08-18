@@ -52,7 +52,7 @@ async function pedir() {
     <div class="pidelo-texto">
       <p class="pidelo-titular">¿No encuentras tu bar favorito?</p>
       <p class="pidelo-sub">
-        Mándale el enlace para que se apunte — es gratis y tarda un minuto.
+        Mándaselo para que salga en la web — solo tarda un minuto.
       </p>
     </div>
 

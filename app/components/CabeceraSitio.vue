@@ -126,7 +126,7 @@ onBeforeUnmount(() => {
           target="_blank"
           rel="noopener"
         >
-          Alta gratis
+          Apunta tu bar
         </a>
       </nav>
 

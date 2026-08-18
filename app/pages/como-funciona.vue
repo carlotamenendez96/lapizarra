@@ -9,7 +9,7 @@ const { data: ciudades } = await useAsyncData('ciudades-como', () => datosCiudad
 
 const titulo = 'Cómo funciona La Pizarrina — menú del día en Asturias'
 const descripcion =
-  'La Pizarrina publica cada mañana la foto de la pizarra de bares y restaurantes de Asturias. Apuntarse es gratis: pide el enlace de alta y en un minuto estás publicando el menú.'
+  'La Pizarrina publica cada mañana la foto de la pizarra de bares y restaurantes de Asturias. Si tienes un local, contáctanos — sin cuotas ni comisiones, solo mandas la foto cada mañana.'
 
 useSeoPagina({
   title: titulo,
@@ -38,12 +38,12 @@ useSeoPagina({
       '@type': 'HowTo',
       name: 'Cómo publicar el menú del día en La Pizarrina',
       description:
-        'Es gratis. Te enviamos el enlace de alta en Telegram. Registras el local y cada mañana mandas la foto de la pizarra.',
+        'Totalmente gratis, sin cuotas ni comisiones. Te enviamos el enlace de alta en Telegram. Registras el local y cada mañana mandas la foto de la pizarra.',
       step: [
         {
           '@type': 'HowToStep',
           position: 1,
-          name: 'Pide el enlace de alta (es gratis)',
+          name: 'Pide el enlace de alta',
           text: 'Contacta con el equipo. Te enviarán tu enlace de alta en Telegram sin coste.',
         },
         {
@@ -76,7 +76,7 @@ useSeoPagina({
           name: '¿Cómo publico el menú de mi bar en La Pizarrina?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Es gratis. Te enviamos tu enlace de alta en Telegram. Con él registras el local y, cada mañana, fotografías la pizarra y la mandas; en minutos aparece en la web.',
+            text: 'Totalmente gratis, sin cuotas ni comisiones. Te enviamos tu enlace de alta en Telegram. Con él registras el local y, cada mañana, fotografías la pizarra y la mandas; en minutos aparece en la web.',
           },
         },
         {
@@ -84,7 +84,7 @@ useSeoPagina({
           name: '¿Cómo doy de alta mi local?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Es completamente gratis. Te enviamos el enlace de alta en Telegram. Tú registras el local desde ese enlace y, a partir de ahí, publicar el menú es mandar una foto.',
+            text: 'Totalmente gratis, sin cuotas ni comisiones. Te enviamos el enlace de alta en Telegram. Tú registras el local desde ese enlace y, a partir de ahí, publicar el menú es mandar una foto.',
           },
         },
         {
@@ -158,7 +158,7 @@ useSeoPagina({
         <div class="contenedor bloque">
           <h2 class="titulo-seccion">Para el bar o restaurante</h2>
           <p class="intro">
-            Es completamente <strong>gratis</strong>. Te enviamos tu <strong>enlace de alta en Telegram</strong>.
+            <strong>Totalmente gratis, sin cuotas ni comisiones.</strong> Te enviamos tu <strong>enlace de alta en Telegram</strong>.
             Con él registras el local y, a partir de ahí, publicar el menú es
             mandar una foto.
           </p>
@@ -166,14 +166,14 @@ useSeoPagina({
           <div class="carril">
             <article class="tarjeta-flujo" style="--i: 0">
               <p class="etiqueta">Paso 1</p>
-              <h3>Pide el enlace de alta</h3>
-              <p>Te enviamos tu enlace de alta en Telegram, sin coste.</p>
+              <h3>Contáctanos y danos los datos</h3>
+              <p>Nos cuentas el nombre, dirección y horario del local. Nosotros hacemos el resto.</p>
             </article>
             <span class="flecha" aria-hidden="true">→</span>
             <article class="tarjeta-flujo" style="--i: 1">
               <p class="etiqueta">Paso 2</p>
-              <h3>Das de alta el local</h3>
-              <p>Abres el enlace, registras tu bar y ya puedes publicar el menú.</p>
+              <h3>Te enviamos tu enlace de Telegram</h3>
+              <p>Damos de alta el local y te mandamos un enlace. Ábrelo una vez para vincular tu chat — ya puedes empezar a publicar.</p>
             </article>
             <span class="flecha" aria-hidden="true">→</span>
             <article class="tarjeta-flujo" style="--i: 2">
@@ -187,11 +187,11 @@ useSeoPagina({
             <div>
               <h2>¿Quieres salir en La Pizarrina?</h2>
               <p>
-                Es gratis. Pide el enlace de alta y en minutos tu bar aparece en la web de tu ciudad.
+                Tu menú, en la web de tu ciudad. Totalmente gratis, sin cuotas ni comisiones — solo mandas la foto de la pizarra cada mañana.
               </p>
             </div>
             <a class="boton" :href="contacto" target="_blank" rel="noopener">
-              Apuntarse gratis
+              Quiero salir en la web
             </a>
           </div>
         </div>
