@@ -53,40 +53,28 @@ function elegirBarrio(nombre: string) {
   <div>
     <div class="filtros" :class="{ 'filtros--barrios': mostrarBarrios }">
       <div v-if="mostrarBarrios" class="barrios">
-        <h3 class="eyebrow">Dónde quieres comer</h3>
-        <div class="mosaico" role="group" aria-label="Barrio">
+        <div class="chips" role="group" aria-label="Filtrar por barrio">
           <button
             type="button"
-            class="lugar"
-            :class="{ 'lugar--activo': !barrioActivo }"
+            class="chip"
+            :class="{ 'chip--activo': !barrioActivo }"
             :aria-pressed="!barrioActivo"
             @click="elegirBarrio('')"
           >
-            <span class="lugar-icono" aria-hidden="true">
-              <span /><span /><span />
-            </span>
-            <span class="lugar-nombre">Toda la ciudad</span>
-            <span class="lugar-dato">{{ menus.length }} {{ menus.length === 1 ? 'pizarra' : 'pizarras' }}</span>
+            Todos
+            <span class="chip-cuenta">{{ menus.length }}</span>
           </button>
           <button
             v-for="b in barrios"
             :key="b.nombre"
             type="button"
-            class="lugar"
-            :class="{ 'lugar--activo': barrioActivo === b.nombre }"
+            class="chip"
+            :class="{ 'chip--activo': barrioActivo === b.nombre }"
             :aria-pressed="barrioActivo === b.nombre"
             @click="elegirBarrio(b.nombre)"
           >
-            <span class="lugar-icono lugar-icono--pin" aria-hidden="true">
-              <svg viewBox="0 0 16 16" width="14" height="14">
-                <path
-                  fill="currentColor"
-                  d="M8 1.5a4.6 4.6 0 0 0-4.6 4.6c0 3.2 4.6 8.4 4.6 8.4s4.6-5.2 4.6-8.4A4.6 4.6 0 0 0 8 1.5Zm0 6.2a1.6 1.6 0 1 1 0-3.2 1.6 1.6 0 0 1 0 3.2Z"
-                />
-              </svg>
-            </span>
-            <span class="lugar-nombre">{{ b.nombre }}</span>
-            <span class="lugar-dato">{{ b.total }} {{ b.total === 1 ? 'pizarra' : 'pizarras' }}</span>
+            {{ b.nombre }}
+            <span class="chip-cuenta">{{ b.total }}</span>
           </button>
         </div>
       </div>
@@ -143,122 +131,69 @@ function elegirBarrio(nombre: string) {
   background: var(--blanco);
   border: 1px solid var(--borde);
   border-radius: var(--radio);
-  padding: 1.15rem 1.2rem 1.25rem;
+  padding: 0.95rem 1.2rem 1.1rem;
   box-shadow: var(--sombra-suave);
 }
 
 .barrios { margin-bottom: 1.15rem; }
 
-.mosaico {
+.chips {
   display: flex;
-  gap: 0.65rem;
-  overflow-x: auto;
-  margin: 0.85rem 0 0;
-  padding: 0.1rem 0 0.35rem;
-  scroll-snap-type: x proximity;
-  scrollbar-width: thin;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
 }
 
-.lugar {
-  flex: 1 1 9.5rem;
-  min-width: 9.5rem;
-  max-width: 16rem;
-  scroll-snap-align: start;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.28rem;
-  text-align: left;
-  padding: 0.9rem 1rem 0.95rem;
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.85rem;
   border: 1px solid var(--borde);
-  border-radius: var(--radio-sm);
+  border-radius: var(--radio-pill);
   background: var(--papel);
-  font-family: inherit;
-  color: inherit;
+  font-family: var(--texto);
+  font-size: var(--paso-1);
+  color: var(--grafito);
   cursor: pointer;
+  white-space: nowrap;
   transition:
     background var(--transicion),
     border-color var(--transicion),
     color var(--transicion),
-    transform var(--transicion),
     box-shadow var(--transicion);
 }
 
-.lugar:hover {
-  transform: translateY(-2px);
+.chip:hover {
+  border-color: color-mix(in srgb, var(--pizarra) 40%, var(--borde));
   box-shadow: var(--sombra-suave);
-  border-color: color-mix(in srgb, var(--pizarra) 35%, var(--borde));
 }
 
-.lugar--activo {
+.chip--activo {
   background: var(--pizarra);
   border-color: var(--pizarra);
   color: var(--tiza);
-  box-shadow: var(--sombra-suave);
 }
 
-.lugar--activo:hover { transform: none; }
-
-.lugar-icono {
-  width: 1.7rem;
-  height: 1.35rem;
-  border-radius: 7px;
-  background: var(--blanco);
-  border: 1px dashed var(--borde);
-  display: grid;
-  place-items: center;
-  grid-template-columns: repeat(3, 5px);
-  gap: 3px;
-  padding: 0 5px;
-  margin-bottom: 0.2rem;
+.chip--activo:hover {
+  background: var(--pizarra-claro);
+  border-color: var(--pizarra-claro);
 }
 
-.lugar-icono span {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--pizarra);
-  opacity: 0.35;
-}
-
-.lugar-icono span:nth-child(2) {
-  opacity: 1;
-  background: var(--sidra);
-}
-
-.lugar-icono--pin {
-  display: grid;
-  place-items: center;
-  color: var(--sidra);
-  border-style: solid;
-}
-
-.lugar--activo .lugar-icono {
-  background: rgba(244, 234, 214, 0.1);
-  border-color: rgba(244, 234, 214, 0.16);
-}
-
-.lugar--activo .lugar-icono span { background: var(--tiza); }
-.lugar--activo .lugar-icono span:nth-child(2) { background: var(--sidra-clara); }
-.lugar--activo .lugar-icono--pin { color: var(--tiza); }
-
-.lugar-nombre {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: var(--paso-1-arriba);
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-}
-
-.lugar-dato {
+.chip-cuenta {
   font-family: var(--dato);
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--sidra);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: var(--radio-pill);
+  padding: 0.1em 0.55em;
+  line-height: 1.6;
 }
 
-.lugar--activo .lugar-dato { color: var(--sidra-clara); }
+.chip--activo .chip-cuenta {
+  background: rgba(244, 234, 214, 0.18);
+}
 
 .barra {
   display: flex;
