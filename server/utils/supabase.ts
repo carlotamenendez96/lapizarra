@@ -19,6 +19,7 @@ export interface MenuHoy {
   lng: number | null
   contact_phone: string | null
   schedule: string | null
+  notes: string | null
   menu_id: string | null
   photo_url: string | null
   thumb_url?: string | null

@@ -209,6 +209,11 @@ const enlaceMapa = computed(
               <dt>Horario</dt>
               <dd>{{ local.schedule }}</dd>
             </template>
+
+            <template v-if="local.notes">
+              <dt>Notas</dt>
+              <dd>{{ local.notes }}</dd>
+            </template>
           </dl>
 
           <a class="boton" :href="enlaceMapa" target="_blank" rel="noopener">Cómo llegar</a>
