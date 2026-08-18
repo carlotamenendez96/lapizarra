@@ -7,7 +7,6 @@ const props = defineProps<{
   prioritaria?: boolean
 }>()
 
-const precio = computed(() => precioLegible(props.menu.price, props.menu.price_text))
 const zona = computed(() => props.menu.neighborhood || props.menu.city)
 </script>
 
@@ -24,8 +23,6 @@ const zona = computed(() => props.menu.neighborhood || props.menu.city)
           :fetchpriority="prioritaria ? 'high' : 'auto'"
           decoding="async"
         >
-        <span v-if="precio" class="precio chapa">{{ precio }}</span>
-        <span v-else class="precio precio--libre chapa">En la foto</span>
       </div>
 
       <div class="cuerpo">
@@ -105,20 +102,6 @@ const zona = computed(() => props.menu.neighborhood || props.menu.city)
   .marco img {
     object-position: center top;
   }
-}
-
-.chapa {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  box-shadow: 0 6px 16px -8px rgba(16, 25, 23, 0.55);
-}
-
-.precio--libre.chapa {
-  background: color-mix(in srgb, var(--blanco) 88%, transparent);
-  backdrop-filter: blur(8px);
-  color: var(--grafito);
-  border-color: transparent;
 }
 
 .cuerpo {
