@@ -126,7 +126,7 @@ onBeforeUnmount(() => {
           target="_blank"
           rel="noopener"
         >
-          Dar de alta
+          Alta gratis
         </a>
       </nav>
 

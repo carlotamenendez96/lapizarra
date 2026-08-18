@@ -29,10 +29,10 @@ const contacto = config.public.contactoComercialUrl as string
         <div>
           <p class="titulo">¿Tienes un bar?</p>
           <p class="claim">
-            Un comercial te envía el enlace de alta en Telegram. Tú registras el local y publicas el menú con una foto.
+            Es completamente gratis. Te enviamos el enlace de alta en Telegram, registras el local y publicas el menú con una foto.
           </p>
           <a class="enlace-alta enlace-alta--boton" :href="contacto" target="_blank" rel="noopener">
-            Hablar con un comercial
+            Apuntarse gratis
           </a>
         </div>
       </div>

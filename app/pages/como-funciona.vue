@@ -9,7 +9,7 @@ const { data: ciudades } = await useAsyncData('ciudades-como', () => datosCiudad
 
 const titulo = 'Cómo funciona La Pizarrina — menú del día en Asturias'
 const descripcion =
-  'La Pizarrina publica cada mañana la foto de la pizarra de bares y restaurantes de Asturias. Si tienes un local, un comercial te envía el enlace de alta en Telegram.'
+  'La Pizarrina publica cada mañana la foto de la pizarra de bares y restaurantes de Asturias. Apuntarse es gratis: pide el enlace de alta y en un minuto estás publicando el menú.'
 
 useSeoPagina({
   title: titulo,
@@ -38,13 +38,13 @@ useSeoPagina({
       '@type': 'HowTo',
       name: 'Cómo publicar el menú del día en La Pizarrina',
       description:
-        'Un comercial te envía el enlace de alta en Telegram. Registras el local y cada mañana mandas la foto de la pizarra.',
+        'Es gratis. Te enviamos el enlace de alta en Telegram. Registras el local y cada mañana mandas la foto de la pizarra.',
       step: [
         {
           '@type': 'HowToStep',
           position: 1,
-          name: 'Habla con un comercial',
-          text: 'Contacta con el equipo. Te enviarán tu enlace de alta en Telegram.',
+          name: 'Pide el enlace de alta (es gratis)',
+          text: 'Contacta con el equipo. Te enviarán tu enlace de alta en Telegram sin coste.',
         },
         {
           '@type': 'HowToStep',
@@ -76,7 +76,7 @@ useSeoPagina({
           name: '¿Cómo publico el menú de mi bar en La Pizarrina?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Un comercial te envía tu enlace de alta en Telegram. Con él registras el local y, cada mañana, fotografías la pizarra y la mandas; en minutos aparece en la web.',
+            text: 'Es gratis. Te enviamos tu enlace de alta en Telegram. Con él registras el local y, cada mañana, fotografías la pizarra y la mandas; en minutos aparece en la web.',
           },
         },
         {
@@ -84,7 +84,7 @@ useSeoPagina({
           name: '¿Cómo doy de alta mi local?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Un comercial te envía el enlace de alta en Telegram. Tú registras el local desde ese enlace y, a partir de ahí, publicar el menú es mandar una foto.',
+            text: 'Es completamente gratis. Te enviamos el enlace de alta en Telegram. Tú registras el local desde ese enlace y, a partir de ahí, publicar el menú es mandar una foto.',
           },
         },
         {
@@ -158,7 +158,7 @@ useSeoPagina({
         <div class="contenedor bloque">
           <h2 class="titulo-seccion">Para el bar o restaurante</h2>
           <p class="intro">
-            Un comercial te envía tu <strong>enlace de alta en Telegram</strong>.
+            Es completamente <strong>gratis</strong>. Te enviamos tu <strong>enlace de alta en Telegram</strong>.
             Con él registras el local y, a partir de ahí, publicar el menú es
             mandar una foto.
           </p>
@@ -166,8 +166,8 @@ useSeoPagina({
           <div class="carril">
             <article class="tarjeta-flujo" style="--i: 0">
               <p class="etiqueta">Paso 1</p>
-              <h3>Contacta con un comercial</h3>
-              <p>Te explica el servicio y te envía tu enlace de alta en Telegram.</p>
+              <h3>Pide el enlace de alta</h3>
+              <p>Te enviamos tu enlace de alta en Telegram, sin coste.</p>
             </article>
             <span class="flecha" aria-hidden="true">→</span>
             <article class="tarjeta-flujo" style="--i: 1">
@@ -187,12 +187,11 @@ useSeoPagina({
             <div>
               <h2>¿Quieres salir en La Pizarrina?</h2>
               <p>
-                Habla con un comercial. Te enviará el enlace de alta en Telegram
-                cuando tu local esté listo.
+                Es gratis. Pide el enlace de alta y en minutos tu bar aparece en la web de tu ciudad.
               </p>
             </div>
             <a class="boton" :href="contacto" target="_blank" rel="noopener">
-              Hablar con un comercial
+              Apuntarse gratis
             </a>
           </div>
         </div>
