@@ -19,7 +19,7 @@ const zona = computed(() => props.menu.neighborhood || props.menu.city)
           :src="menu.thumb_url || menu.photo_url || ''"
           :alt="`Menú del día de hoy en ${menu.venue_name}, ${menu.city}`"
           width="600"
-          height="450"
+          height="800"
           :loading="prioritaria ? 'eager' : 'lazy'"
           :fetchpriority="prioritaria ? 'high' : 'auto'"
           decoding="async"
@@ -76,15 +76,35 @@ const zona = computed(() => props.menu.neighborhood || props.menu.city)
   position: relative;
 }
 
+/* Absolute fill: height:100% dentro de un padre con solo aspect-ratio
+   no se resuelve bien en WebKit (móvil) y la foto se aplasta. */
 .marco img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  max-width: none;
   object-fit: cover;
+  object-position: center;
   transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.tarjeta:hover .marco img {
-  transform: scale(1.05);
+@media (hover: hover) {
+  .tarjeta:hover .marco img {
+    transform: scale(1.05);
+  }
+}
+
+/* Las pizarras se fotografían en vertical (como en la ficha). En móvil
+   la tarjeta es a ancho completo: 4/3 recorta o estira el menú. */
+@media (max-width: 640px) {
+  .marco {
+    aspect-ratio: 3 / 4;
+  }
+
+  .marco img {
+    object-position: center top;
+  }
 }
 
 .chapa {

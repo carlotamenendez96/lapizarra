@@ -70,7 +70,7 @@ h1, h2, h3 {
 
 a { color: inherit; }
 
-img { display: block; max-width: 100%; }
+img { display: block; max-width: 100%; height: auto; }
 
 .contenedor {
   width: 100%;
