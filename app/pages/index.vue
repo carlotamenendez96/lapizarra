@@ -126,6 +126,7 @@ const { siteUrl } = useSeoPagina({
           :menus="menus"
           mensaje-vacio="Todavía no hay menús publicados hoy. Los bares suelen colgar su pizarra entre las 10 y las 12."
         />
+        <PideloAlBar class="pidelo-margen" />
       </section>
 
       <section class="contenedor seo-bloque">
@@ -280,6 +281,8 @@ const { siteUrl } = useSeoPagina({
 .chip:hover .chip-num { color: var(--sidra-clara); }
 
 .listado { padding-top: 2.8rem; }
+
+.pidelo-margen { margin-top: 2rem; }
 
 .titulo-seccion {
   font-size: var(--paso-2);

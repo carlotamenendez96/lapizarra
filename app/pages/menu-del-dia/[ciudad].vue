@@ -119,6 +119,7 @@ const { siteUrl } = useSeoPagina({
           filtrar-por-barrio
           :mensaje-vacio="`Todavía no hay menús publicados hoy en ${nombreCiudad}. Los bares suelen colgar su pizarra entre las 10 y las 12.`"
         />
+        <PideloAlBar class="pidelo-margen" :ciudad="nombreCiudad" />
       </section>
 
       <section class="contenedor puente">
@@ -220,6 +221,8 @@ const { siteUrl } = useSeoPagina({
 }
 
 .listado { padding-top: 2.4rem; }
+
+.pidelo-margen { margin-top: 2rem; }
 
 .puente { padding-top: 2.6rem; }
 
