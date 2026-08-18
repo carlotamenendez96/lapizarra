@@ -14,15 +14,19 @@ const zona = computed(() => props.menu.neighborhood || props.menu.city)
   <article class="tarjeta">
     <NuxtLink :to="`/restaurante/${menu.slug}`" class="enlace">
       <div class="marco">
-        <img
+        <NuxtPicture
           :src="menu.thumb_url || menu.photo_url || ''"
-          :alt="`Menú del día de hoy en ${menu.venue_name}, ${menu.city}`"
+          :alt="altMenuDelDia(menu.venue_name, menu.city)"
+          format="avif,webp"
           width="600"
           height="800"
-          :loading="prioritaria ? 'eager' : 'lazy'"
-          :fetchpriority="prioritaria ? 'high' : 'auto'"
-          decoding="async"
-        >
+          sizes="(max-width: 640px) 100vw, (max-width: 1000px) 45vw, 260px"
+          :img-attrs="{
+            loading: prioritaria ? 'eager' : 'lazy',
+            fetchpriority: prioritaria ? 'high' : 'auto',
+            decoding: 'async',
+          }"
+        />
       </div>
 
       <div class="cuerpo">
@@ -71,6 +75,12 @@ const zona = computed(() => props.menu.neighborhood || props.menu.city)
   background: var(--papel-hueso);
   overflow: hidden;
   position: relative;
+}
+
+/* `display: contents` en el <picture> de NuxtPicture: así el <img> que
+   contiene se posiciona respecto a `.marco` como si no hubiera envoltorio. */
+.marco picture {
+  display: contents;
 }
 
 /* Absolute fill: height:100% dentro de un padre con solo aspect-ratio

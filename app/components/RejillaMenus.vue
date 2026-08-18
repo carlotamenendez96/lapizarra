@@ -7,10 +7,35 @@ const props = defineProps<{
   mensajeVacio?: string
   /** Chips de barrio: solo en la página de ciudad, no en toda Asturias. */
   filtrarPorBarrio?: boolean
+  /**
+   * Refleja la búsqueda en `?q=` de la URL (sin recargar la página): así
+   * el buscador tiene una URL propia y compartible, y el `WebSite` con
+   * `SearchAction` de la home apunta a algo que de verdad funciona.
+   */
+  sincronizarUrl?: boolean
 }>()
 
-const consulta = ref('')
+const route = useRoute()
+const router = useRouter()
+
+const consulta = ref(
+  props.sincronizarUrl && typeof route.query.q === 'string' ? route.query.q : '',
+)
 const barrioActivo = ref('')
+
+let temporizadorUrl: ReturnType<typeof setTimeout> | undefined
+
+/* Debounce simple: no queremos reescribir la URL en cada pulsación de
+   tecla, solo cuando el usuario deja de escribir un momento. */
+watch(consulta, (valor) => {
+  if (!props.sincronizarUrl) return
+  clearTimeout(temporizadorUrl)
+  temporizadorUrl = setTimeout(() => {
+    router.replace({ query: { ...route.query, q: valor || undefined } })
+  }, 400)
+})
+
+onBeforeUnmount(() => clearTimeout(temporizadorUrl))
 
 const barrios = computed(() => {
   const conteo = new Map<string, number>()

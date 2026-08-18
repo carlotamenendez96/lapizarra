@@ -26,6 +26,14 @@ export interface MenuHoy {
   price: number | null
   price_text: string | null
   updated_at: string | null
+  /**
+   * TODO(OCR): cuando exista un pipeline de OCR sobre `photo_url`, añadir
+   * aquí `menu_texto_ocr: string | null` (y la columna equivalente en
+   * `public.menus`), devolverlo desde `search_active_menus` / `venue_by_slug`,
+   * y renderizarlo como HTML real en `restaurante/[slug].vue` y en el
+   * listado — hoy Google no puede leer los platos porque solo existen
+   * dentro de la foto de la pizarra.
+   */
 }
 
 export interface Ciudad {

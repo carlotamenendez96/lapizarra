@@ -1,3 +1,22 @@
+/**
+ * Dominio de Supabase Storage para autorizarlo en @nuxt/image (por
+ * defecto IPX rechaza optimizar imágenes de dominios no listados).
+ * Se lee en tiempo de build; si falta la variable, se usa el proyecto
+ * conocido para que `nuxt build` no falle en local sin .env.
+ */
+function dominioSupabaseStorage(): string {
+  const cruda = process.env.SUPABASE_URL || process.env.NUXT_SUPABASE_URL || 'https://oeuobixauwbdfuinmhvy.supabase.co'
+  try {
+    let url = cruda.trim().replace(/^['"]|['"]$/g, '').replace(/\/+$/, '')
+    if (url.startsWith('ttps://')) url = `h${url}`
+    if (!/^https?:\/\//i.test(url)) url = `https://${url}`
+    return new URL(url).host
+  }
+  catch {
+    return 'oeuobixauwbdfuinmhvy.supabase.co'
+  }
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-08-01',
 
@@ -5,7 +24,7 @@ export default defineNuxtConfig({
   // en el HTML. Con una SPA normal indexaría una página vacía.
   ssr: true,
 
-  modules: ['@nuxt/fonts'],
+  modules: ['@nuxt/fonts', '@nuxt/image'],
 
   css: ['~/assets/css/main.css'],
 
@@ -37,6 +56,22 @@ export default defineNuxtConfig({
 
   nitro: {
     compressPublicAssets: { brotli: true, gzip: true },
+  },
+
+  // Las fotos de menú viven en Supabase Storage. IPX las convierte a
+  // AVIF/WebP y genera los tamaños responsive on-the-fly (no depende del
+  // plan de pago de Supabase: la transformación la hace el propio Nitro).
+  image: {
+    domains: [dominioSupabaseStorage()],
+    screens: {
+      xs: 260,
+      sm: 400,
+      md: 600,
+      lg: 800,
+      xl: 1000,
+    },
+    format: ['avif', 'webp'],
+    quality: 78,
   },
 
   // Auto-aloja Fraunces / Manrope / IBM Plex Mono (usadas vía variables CSS

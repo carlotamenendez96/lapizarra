@@ -3,6 +3,18 @@
  * "menu asturias", "menu gijon", "menu del dia oviedo", etc.
  */
 
+import { fechaLarga } from './formato'
+
+/**
+ * `alt` único por foto: nombre + ciudad + fecha. La fecha es la parte
+ * que hace que el `alt` no se repita día tras día para el mismo local
+ * (relevante para Google Imágenes) y refuerza que el contenido está
+ * actualizado a diario.
+ */
+export function altMenuDelDia(nombreLocal: string, ciudad: string): string {
+  return `Menú del día de ${nombreLocal} en ${ciudad} - ${fechaLarga()}`
+}
+
 export function tituloSeoHome(): string {
   return 'Menú del día Asturias hoy — Gijón, Oviedo, Avilés, Salinas | La Pizarrina'
 }

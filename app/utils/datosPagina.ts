@@ -23,11 +23,23 @@ export function datosCiudad(api: FetchApi, slug: string) {
   ]).then(([menus, ciudades]) => ({ menus, ciudades }))
 }
 
+/**
+ * Ficha de restaurante + ciudades (nav) + hasta 3 restaurantes cercanos
+ * de la misma ciudad con menú publicado hoy, para enlace interno cruzado
+ * ("restaurantes cercanos"). El local propio se filtra por slug, no por
+ * posición, porque `/api/menus` no garantiza un orden estable con el local.
+ */
 export function datosRestaurante(api: FetchApi, slug: string) {
-  return Promise.all([
-    api<MenuHoy>(`/api/restaurante/${slug}`),
-    api<Ciudad[]>('/api/ciudades').catch(() => [] as Ciudad[]),
-  ]).then(([local, ciudades]) => ({ local, ciudades }))
+  return api<MenuHoy>(`/api/restaurante/${slug}`).then(async (local) => {
+    const [ciudades, delaMismaCiudad] = await Promise.all([
+      api<Ciudad[]>('/api/ciudades').catch(() => [] as Ciudad[]),
+      api<MenuHoy[]>('/api/menus', { query: { ciudad: local.city } }).catch(() => [] as MenuHoy[]),
+    ])
+
+    const cercanos = delaMismaCiudad.filter((m) => m.slug !== slug).slice(0, 3)
+
+    return { local, ciudades, cercanos }
+  })
 }
 
 export function datosCiudades(api: FetchApi) {

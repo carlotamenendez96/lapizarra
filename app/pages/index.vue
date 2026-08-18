@@ -31,6 +31,14 @@ const { siteUrl } = useSeoPagina({
       description:
         'Los menús del día de los restaurantes de Asturias, actualizados cada mañana con la foto de la pizarra.',
       publisher: { '@id': `${siteUrl}/#organization` },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: `${siteUrl}/?q={search_term_string}`,
+        },
+        'query-input': 'required name=search_term_string',
+      },
     },
     {
       '@type': 'Organization',
@@ -124,6 +132,7 @@ const { siteUrl } = useSeoPagina({
         <h2 class="titulo-seccion">Menús publicados hoy</h2>
         <RejillaMenus
           :menus="menus"
+          sincronizar-url
           mensaje-vacio="Todavía no hay menús publicados hoy. Los bares suelen colgar su pizarra entre las 10 y las 12."
         />
         <PideloAlBar class="pidelo-margen" />

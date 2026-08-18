@@ -16,10 +16,23 @@ if (error.value || !data.value?.local) {
 
 const local = computed(() => data.value!.local)
 const ciudades = computed(() => data.value?.ciudades ?? [])
+const cercanos = computed(() => data.value?.cercanos ?? [])
 const ciudadSlug = computed(
   () => ciudades.value.find((c) => c.city === local.value.city)?.city_slug || '',
 )
 
+/**
+ * TODO(OCR): hoy el menú es solo una foto de la pizarra; Google no puede
+ * leer los platos porque están dentro de la imagen, así que no se puede
+ * posicionar por plato ("fabada", "lentejas"...), solo por nombre de
+ * restaurante y ciudad. Cuando exista un pipeline de OCR sobre
+ * `local.photo_url` (ver TODO equivalente en server/utils/supabase.ts):
+ *   1. Añadir `menu_texto_ocr: string | null` a `MenuHoy`.
+ *   2. Debajo de la <figure> del template, renderizar ese texto como HTML
+ *      real (p. ej. una <ul> con un <li> por plato), no solo en el `alt`.
+ *   3. Ese texto también debería incorporarse a `hasMenu` en el JSON-LD
+ *      de más abajo (p. ej. como `hasMenuSection`/`hasMenuItem`).
+ */
 const tieneMenuHoy = computed(() => Boolean(local.value.photo_url))
 const precio = computed(() => precioLegible(local.value.price, local.value.price_text))
 const fecha = fechaLarga()
@@ -44,9 +57,7 @@ const { siteUrl } = useSeoPagina({
   description: descripcion,
   url,
   image: imagenSocial,
-  imageAlt: computed(
-    () => `Pizarra del menú del día en ${local.value.venue_name}, ${local.value.city}`,
-  ),
+  imageAlt: computed(() => altMenuDelDia(local.value.venue_name, local.value.city)),
   jsonLd: computed(() => [
     {
       '@type': 'BreadcrumbList',
@@ -75,7 +86,7 @@ const { siteUrl } = useSeoPagina({
               url: local.value.photo_url,
               width: 1000,
               height: 1333,
-              caption: `Pizarra con el menú del día de hoy en ${local.value.venue_name}`,
+              caption: altMenuDelDia(local.value.venue_name, local.value.city),
             },
           }
         : {}),
@@ -122,6 +133,15 @@ const { siteUrl } = useSeoPagina({
                   }
                 : {}),
             },
+          }
+        : {}),
+      ...(cercanos.value.length
+        ? {
+            isRelatedTo: cercanos.value.map((c) => ({
+              '@type': 'Restaurant',
+              name: c.venue_name,
+              url: `${siteUrl}/restaurante/${c.slug}`,
+            })),
           }
         : {}),
     },
@@ -174,20 +194,27 @@ const enlaceMapa = computed(
           <h2 class="eyebrow">Menú de hoy, {{ fecha }}</h2>
 
           <figure v-if="tieneMenuHoy" class="foto">
-            <img
+            <NuxtPicture
               :src="local.photo_url!"
-              :alt="`Pizarra con el menú del día de hoy en ${local.venue_name}, ${local.city}`"
+              :alt="altMenuDelDia(local.venue_name, local.city)"
+              format="avif,webp"
+              fit="inside"
               width="1000"
               height="1333"
-              fetchpriority="high"
-              decoding="async"
-            >
+              sizes="(max-width: 780px) 100vw, 620px"
+              :img-attrs="{ fetchpriority: 'high', decoding: 'async' }"
+            />
             <figcaption>Foto de la pizarra enviada hoy por el restaurante.</figcaption>
           </figure>
 
           <p v-else class="sin-menu">
             {{ local.venue_name }} todavía no ha publicado el menú de hoy. Los bares suelen
             colgar su pizarra entre las 10 y las 12 de la mañana.
+          </p>
+
+          <p class="texto-seo-local">
+            Consulta hoy el menú del día de {{ local.venue_name }} en {{ local.city }},
+            actualizado a diario en La Pizarrina con la foto real de la pizarra del local.
           </p>
         </section>
 
@@ -223,6 +250,18 @@ const enlaceMapa = computed(
           </NuxtLink>
         </aside>
       </div>
+
+      <section v-if="cercanos.length" class="contenedor cercanos">
+        <h2 class="titulo-seccion">Otros menús del día cerca, en {{ local.city }}</h2>
+        <ul class="cercanos-lista">
+          <li v-for="c in cercanos" :key="c.venue_id">
+            <NuxtLink :to="`/restaurante/${c.slug}`" class="cercano">
+              <span class="cercano-nombre">{{ c.venue_name }}</span>
+              <span class="cercano-zona">{{ c.neighborhood || c.city }}</span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </section>
     </main>
 
     <PieSitio :ciudades="ciudades" />
@@ -315,6 +354,10 @@ const enlaceMapa = computed(
   box-shadow: var(--sombra-suave);
 }
 
+.foto picture {
+  display: block;
+}
+
 .foto img {
   width: 100%;
   height: auto;
@@ -403,4 +446,56 @@ dd a:hover { text-decoration: underline; text-underline-offset: 3px; }
 }
 
 .volver:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.texto-seo-local {
+  margin: 1.1rem 0 0;
+  color: var(--grafito-suave);
+  max-width: 56ch;
+  line-height: 1.6;
+}
+
+.cercanos {
+  padding: 2.4rem 0 3rem;
+}
+
+.cercanos .titulo-seccion {
+  font-size: var(--paso-1-arriba);
+  margin-bottom: 1rem;
+}
+
+.cercanos-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+}
+
+.cercano {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.85rem 1rem;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  text-decoration: none;
+  transition: border-color var(--transicion), box-shadow var(--transicion);
+}
+
+.cercano:hover {
+  border-color: color-mix(in srgb, var(--sidra) 30%, var(--borde));
+  box-shadow: var(--sombra-suave);
+}
+
+.cercano-nombre {
+  font-weight: 600;
+  color: var(--grafito);
+}
+
+.cercano-zona {
+  font-size: var(--paso-1);
+  color: var(--grafito-suave);
+}
 </style>
